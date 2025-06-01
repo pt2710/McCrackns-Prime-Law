@@ -1,4 +1,4 @@
-from mccrackn_conjector import McCracknConjector
+from mccrackns_prime_law import McCracknsPrimeLaw
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -44,7 +44,7 @@ def print_prime_summary(primes, show=10):
 def test_first_n_primes(n=20, gap_lookup=None):
     print("="*50)
     print(f"TEST: Compare first {n} deterministic primes to reference sequence:")
-    mcc = McCracknConjector(n_primes=n, gap_lookup=gap_lookup)
+    mcc = McCracknsPrimeLaw(n_primes=n, gap_lookup=gap_lookup)
     mcc.generate()
     primes = mcc.get_primes()
     print("\nPrime summary:")
@@ -62,7 +62,7 @@ def test_first_n_primes(n=20, gap_lookup=None):
 def test_innovation_points(gap_lookup=None):
     print("="*50)
     print("TEST: Regime/motif innovation points (Nk) and offset check:")
-    mcc = McCracknConjector(n_primes=40, gap_lookup=gap_lookup)
+    mcc = McCracknsPrimeLaw(n_primes=40, gap_lookup=gap_lookup)
     mcc.generate()
     regime_points = mcc.regime_points
     primes = mcc.get_primes()
@@ -77,7 +77,7 @@ def test_innovation_points(gap_lookup=None):
 def test_no_duplicate_motifs(gap_lookup=None):
     print("="*50)
     print("TEST: Ensure each (domain, run) motif is unique in the sequence:")
-    mcc = McCracknConjector(n_primes=100, gap_lookup=gap_lookup)
+    mcc = McCracknsPrimeLaw(n_primes=100, gap_lookup=gap_lookup)
     mcc.generate()
     used = set()
     duplicates = []
@@ -97,7 +97,7 @@ def test_error_handling(gap_lookup=None):
     print("="*50)
     print("TEST: Error handling for extremely small n_primes (should not fail):")
     try:
-        mcc = McCracknConjector(n_primes=1, gap_lookup=gap_lookup)
+        mcc = McCracknsPrimeLaw(n_primes=1, gap_lookup=gap_lookup)
         mcc.generate()
         print("OK (no crash for n_primes=1)")
         print(f"Primes generated: {mcc.get_primes()}")
@@ -160,7 +160,7 @@ def save_motif_stats(motifs, out_dir="figures"):
     print(f"Saved motif histograms and CSV to {out_dir}/")
 
 def main_gap_and_motif_analysis(n=100000, gap_lookup=None, out_dir="figures"):
-    mcc = McCracknConjector(n_primes=n, gap_lookup=gap_lookup)
+    mcc = McCracknsPrimeLaw(n_primes=n, gap_lookup=gap_lookup)
     mcc.generate()
     primes = mcc.get_primes()
     motifs = mcc.get_motifs()
