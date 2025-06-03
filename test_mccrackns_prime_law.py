@@ -105,7 +105,7 @@ def test_error_handling(gap_lookup=None):
         print("Error:", e)
     print("="*50)
 
-def save_gap_histogram(primes, out_dir="figures", bins=50):
+def save_gap_histogram(primes, out_dir="figures", out_dir_gaps="gaps", bins=50):
     os.makedirs(out_dir, exist_ok=True)
     gaps = np.diff(primes)
     plt.figure(figsize=(10, 6))
@@ -117,8 +117,8 @@ def save_gap_histogram(primes, out_dir="figures", bins=50):
     plt.savefig(os.path.join(out_dir, "prime_gaps_histogram.png"), dpi=300)
     plt.close()
     # Save gap data for reference
-    pd.DataFrame({"gap": gaps}).to_csv(os.path.join(out_dir, "prime_gaps.csv"), index=False)
-    print(f"Saved gap histogram and data to {out_dir}/")
+    pd.DataFrame({"gap": gaps}).to_csv(os.path.join(out_dir_gaps, "prime_gaps.csv"), index=False)
+    print(f"Saved gap histogram and data to {out_dir_gaps}/")
 
 def save_gap_evolution(primes, out_dir="figures"):
     os.makedirs(out_dir, exist_ok=True)

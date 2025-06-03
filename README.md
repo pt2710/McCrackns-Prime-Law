@@ -1,4 +1,4 @@
-# McCrackn's Prime Law
+# McCrackn’s Prime Law
 
 _Repository slug:_ `mccrackns_prime_law`
 
@@ -6,7 +6,7 @@ _Repository slug:_ `mccrackns_prime_law`
 
 ## Abstract
 
-This project implements **McCrackn's Prime Law**—an explicit, recursive, and deterministic equation for the generation of the prime sequence.
+This project implements **McCrackn’s Prime Law**—an explicit, recursive, and deterministic equation for generating the prime sequence.
 
 ---
 
@@ -15,7 +15,7 @@ This project implements **McCrackn's Prime Law**—an explicit, recursive, and d
 ```bash
 python3 -m venv venv
 source venv/bin/activate    # macOS/Linux
-venv\Scripts\activate     # Windows
+venv\Scripts\activate      # Windows
 pip install -r requirements.txt
 ```
 
@@ -29,12 +29,13 @@ To run all scientific tests:
 python test_mccrackn_conjector.py
 ```
 
-All output (CSV data, PNGs) will be saved in `figures/`.
+All generated output (CSV data, PNGs) will be saved in the `figures/` directory.
 
 ---
 
 ## Project Structure
 
+```
 mccrackns_prime_law/
 ├── .gitignore
 ├── LICENSE
@@ -62,6 +63,18 @@ mccrackns_prime_law/
 └── .github/
     └── workflows/
         └── ci.yml
+```
+
+- **mccrackn_conjector.py**: Core implementation of McCrackn’s Prime Law.
+- **numbers_domains.py**: Domain classification utilities for primes.
+- **test_mccrackn_conjector.py**: Unit tests and scientific validation scripts.
+- **motif_innovation.csv**, **prime_gaps.csv**: Example datasets used by the implementation.
+- **figures/**: Generated plots (e.g., prime gaps histogram, evolution).
+- **gaps/**: CSV files tracking gap sequences under various regimes.
+- **src/**: Auxiliary modules (e.g., helper functions).
+- **configs/**: YAML configuration files.
+- **tests/**: Basic unit tests.
+- **.github/workflows/ci.yml**: Continuous Integration configuration.
 
 ---
 
@@ -70,3 +83,4 @@ mccrackns_prime_law/
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
+```

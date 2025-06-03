@@ -132,7 +132,7 @@ class McCracknsPrimeLaw:
                 continue
             assert self._is_prime(candidate), f"Generated candidate {candidate} is not prime!"
             if self.verbose:
-                print(f"[STEP {len(self.primes)}] Prime: {self.primes[-1]}, Motif: {motif}, Gap: {gap}, Next prime: {candidate}")
+                print(f"[STEP {len(self.primes)}] Prime: {self.primes[-1]}, Gap: {gap}, Next prime: {candidate}")
             self.primes.append(candidate)
             self.gaps.append(gap)
             self.domain_run_counts[motif[0]] += 1
@@ -181,7 +181,7 @@ class McCracknsPrimeLaw:
         Deterministically select the run-th minimal gap for a given domain.
 
         Args:
-            domain (str): Domain label (e.g., 'E1', 'O2', 'U1').
+            domain (str): Domain label (e.g., 'E1', 'O1', 'U1').
             run (int): Motif run index.
 
         Returns:
