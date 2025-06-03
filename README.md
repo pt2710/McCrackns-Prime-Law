@@ -44,15 +44,15 @@ mccrackns_prime_law/
 ├── mccrackn_conjector.py
 ├── numbers_domains.py
 ├── test_mccrackn_conjector.py
-├── motif_innovation.csv
-├── prime_gaps.csv
 ├── figures/
 │   ├── prime_gaps_histogram.png
 │   ├── prime_gaps_evolution.png
 │   ├── motif_innovation_histogram.png
 │   ├── motif_run_histogram.png
+│   ├── motif_innovation.csv
 │   └── ...
 ├── gaps/
+│   ├── prime_gaps.csv
 │   └── gap_sequence_E*.csv
 ├── src/
 │   └── your_module.py
@@ -65,7 +65,7 @@ mccrackns_prime_law/
         └── ci.yml
 ```
 
-- **mccrackn_conjector.py**: Core implementation of McCrackn’s Prime Law.
+- **mccrackn_prime_law.py**: Core implementation of McCrackn’s Prime Law.
 - **numbers_domains.py**: Domain classification utilities for primes.
 - **test_mccrackn_conjector.py**: Unit tests and scientific validation scripts.
 - **motif_innovation.csv**, **prime_gaps.csv**: Example datasets used by the implementation.
