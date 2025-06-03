@@ -50,9 +50,9 @@ mccrackns_prime_law/
 │   ├── motif_innovation_histogram.png
 │   ├── motif_run_histogram.png
 │   ├── motif_innovation.csv
+│   ├── prime_gaps.csv
 │   └── ...
 ├── gaps/
-│   ├── prime_gaps.csv
 │   └── gap_sequence_E*.csv
 ├── src/
 │   └── your_module.py
