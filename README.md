@@ -23,7 +23,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-To run all scientific tests and generate publication-grade figures (histograms/statistics):
+To run all scientific tests:
 
 ```bash
 python test_mccrackn_conjector.py

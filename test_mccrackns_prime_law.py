@@ -171,7 +171,7 @@ def main_gap_and_motif_analysis(n=100000, gap_lookup=None, out_dir="figures"):
 if __name__ == "__main__":
     gap_lookup = load_gap_lookup("./gaps")  # Path to your gap_sequence_E*.csv files
     try:
-        test_first_n_primes(100000, gap_lookup)
+        test_first_n_primes(1000000, gap_lookup)
     except AssertionError as e:
         print(f"ERROR: {e}")
         import sys; sys.exit(1)
@@ -182,5 +182,5 @@ if __name__ == "__main__":
     print()
     test_error_handling(gap_lookup)
     print()
-    # ==== NEW PUBLICATION-GRADE VISUALS ====
-    main_gap_and_motif_analysis(n=100000, gap_lookup=gap_lookup, out_dir="figures")
+
+    main_gap_and_motif_analysis(n=1000000, gap_lookup=gap_lookup, out_dir="figures")
