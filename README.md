@@ -6,7 +6,7 @@ _Repository slug:_ `mccrackns_prime_law`
 
 ## Abstract
 
-This project implements **McCrackn's Prime Law**—an explicit, recursive, and deterministic equation for the generation of the prime sequence. The framework is both mathematically rigorous and publication-ready, including motif innovation statistics and prime gap histograms for research dissemination.
+This project implements **McCrackn's Prime Law**—an explicit, recursive, and deterministic equation for the generation of the prime sequence.
 
 ---
 
@@ -69,3 +69,4 @@ mccrackns_prime_law/
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
+---
