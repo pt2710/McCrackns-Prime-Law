@@ -60,9 +60,9 @@ mccrackns_prime_law/
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
-├── mccrackn_conjector.py
+├── mccrackns_prime_law.py
 ├── numbers_domains.py
-├── test_mccrackn_conjector.py
+├── test_mccrackns_prime_law.py
 ├── figures/
 │   ├── prime_gaps_histogram.png
 │   ├── prime_gaps_evolution.png
