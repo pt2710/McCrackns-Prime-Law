@@ -32,6 +32,31 @@ python test_mccrackns_prime_law.py
 
 The script validates the first few primes, reports regime innovation points and can optionally generate histograms of prime gaps and motif statistics.
 
+Example output for the first 20 primes:
+
+```
+Prime #1: 2
+Prime #2: 3
+Prime #3: 5
+Prime #4: 7
+Prime #5: 11
+Prime #6: 13
+Prime #7: 17
+Prime #8: 19
+Prime #9: 23
+Prime #10: 29
+Prime #11: 31
+Prime #12: 37
+Prime #13: 41
+Prime #14: 43
+Prime #15: 47
+Prime #16: 53
+Prime #17: 59
+Prime #18: 61
+Prime #19: 67
+Prime #20: 71
+```
+
 ---
 
 ## Generating primes programmatically
@@ -42,6 +67,12 @@ from mccrackns_prime_law import McCracknsPrimeLaw
 m = McCracknsPrimeLaw(n_primes=20)
 m.generate()
 print(m.get_primes())
+```
+
+Output:
+
+```
+[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71]
 ```
 
 Gap sequences may be supplied through CSV files stored in the `gaps/` directory. When present they are loaded to accelerate generation.
