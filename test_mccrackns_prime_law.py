@@ -1,3 +1,7 @@
+import pytest
+pytest.importorskip("matplotlib")
+pytest.importorskip("seaborn")
+
 from mccrackns_prime_law import McCracknsPrimeLaw
 import matplotlib.pyplot as plt
 import seaborn as sns
