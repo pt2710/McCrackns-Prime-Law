@@ -42,14 +42,6 @@ To run all scientific tests:
 python test_mccrackns_prime_law.py
 ```
 
-All generated output (CSV data, PNGs) will be saved in the `figures/` directory.
-
-To generate the prime sequence up to a specified limit, for example \(10^7\):
-
-```bash
-python mccrackns_prime_law.py --limit 10000000
-```
-
 ---
 
 ## Project Structure
