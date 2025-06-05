@@ -6,24 +6,15 @@ _Repository slug:_ `mccrackns_prime_law`
 
 ## Abstract
 
-This project implements **McCrackn’s Prime Law**—an explicit, recursive, and deterministic equation for generating the prime sequence.  
-Unlike all previous approaches, this law generates each next prime **directly from the previous prime, without any search, randomness, or empirical lookup tables**.  
-It is supported by rigorous proofs, large-scale computational validation (up to \( n = 10^7 \)), and open, reproducible code.
+This project demonstrates **McCrackn’s Prime Law** – a deterministic and recursive rule that generates each prime directly from its predecessor. The approach removes the need for search, randomization or empirical tables and is accompanied by proofs and validation up to $n=10^7$.
 
-**Full manuscript:**  
-[deterministic_equation_of_primes.pdf](https://github.com/pt2710/McCrackns-Prime-Law/blob/main/deterministic_equation_of_primes.pdf)
+**Full manuscript:** [deterministic_equation_of_primes.pdf](https://github.com/pt2710/McCrackns-Prime-Law/blob/main/deterministic_equation_of_primes.pdf)
 
 ---
 
-## Scientific Significance
+## Quick start
 
-Prime numbers have long been regarded as the archetype of unpredictability in mathematics.  
-McCrackn’s Prime Law addresses a centuries-old challenge by providing a constructive, closed-form process for prime generation.  
-If validated by the community, this breakthrough stands to reshape the foundations of analytic number theory.
-
----
-
-## Installation
+1. Clone the repository and create an isolated environment:
 
 ```bash
 python3 -m venv venv
@@ -32,93 +23,74 @@ venv\Scripts\activate      # Windows
 pip install -r requirements.txt
 ```
 
----
-
-## Usage
-
-To run all tests:
+2. Run the main verification script:
 
 ```bash
 python test_mccrackns_prime_law.py
 ```
 
+The script validates the first few primes, reports regime innovation points and can optionally generate histograms of prime gaps and motif statistics.
+
 ---
 
-## Project Structure
+## Generating primes programmatically
+
+```python
+from mccrackns_prime_law import McCracknsPrimeLaw
+
+m = McCracknsPrimeLaw(n_primes=20)
+m.generate()
+print(m.get_primes())
+```
+
+Gap sequences may be supplied through CSV files stored in the `gaps/` directory. When present they are loaded to accelerate generation.
+
+---
+
+## Repository layout
 
 ```
 mccrackns_prime_law/
-├── .gitignore
-├── LICENSE
-├── README.md
-├── requirements.txt
-├── mccrackns_prime_law.py
-├── numbers_domains.py
+├── LICENSE                  # MIT license text
+├── README.md                # Project overview (this file)
+├── requirements.txt         # Python dependencies
+├── mccrackns_prime_law.py   # Core deterministic generator
+├── numbers_domains.py       # Gap domain classification helpers
 ├── test_mccrackns_prime_law.py
-├── figures/
-│   ├── prime_gaps_histogram.png
-│   ├── prime_gaps_evolution.png
-│   ├── motif_innovation_histogram.png
-│   ├── motif_run_histogram.png
-│   ├── motif_innovation.csv
-│   ├── prime_gaps.csv
-│   └── ...
-├── gaps/
-│   └── gap_sequence_E*.csv
-├── src/
+├── src/                     # Auxiliary modules
 │   └── your_module.py
-├── configs/
+├── configs/                 # Example configuration files
 │   └── default.yaml
-├── tests/
+├── tests/                   # pytest based unit tests
 │   └── test_basic.py
-└── .github/
-    └── workflows/
-        └── ci.yml
+├── .github/workflows/ci.yml # Continuous integration setup
+└── figures/ and gaps/       # Generated data and plots (optional)
 ```
 
-* **mccrackns_prime_law.py**: Core implementation of McCrackn’s Prime Law.  
-* **numbers_domains.py**: Domain classification utilities for primes.  
-* **test_mccrackns_prime_law.py**: Unit tests and scientific validation scripts.  
-* **motif_innovation.csv**, **prime_gaps.csv**: Example datasets used by the implementation.  
-* **figures/**: Generated plots (e.g., prime gaps histogram, evolution).  
-* **gaps/**: CSV files tracking gap sequences under various regimes.  
-* **src/**: Auxiliary modules (e.g., helper functions).  
-* **configs/**: YAML configuration files.  
-* **tests/**: Basic unit tests.  
-* **.github/workflows/ci.yml**: Continuous Integration configuration.
+---
+
+## Reproducibility and open science
+
+> This repository is provided for transparent examination by the mathematical community. All serious feedback is welcome.
+
+The code, data sets and produced figures are open to facilitate independent replication. We encourage running the scripts and verifying the results locally. If you create new figures or discover interesting patterns, feel free to share them.
 
 ---
 
-## Reproducibility & Open Science
+## Contributing
 
-> **This repository and its contents are shared openly for transparent verification, discussion, and critique by the mathematical community.**  
-> Advancement in mathematics requires collective scrutiny and constructive debate.  
-> All serious questions, challenges, or feedback are welcome.
-
-* All code, data, and results are provided to enable full reproducibility.  
-* Validation scripts and reference comparisons are included for independent testing.
-
-If you are a professional mathematician interested in collaborating, providing feedback, or offering peer review, please contact the author below.
-
----
-
-## Preprint & Submission History
-
-* **Full manuscript:** [deterministic_equation_of_primes.pdf](https://github.com/pt2710/McCrackns-Prime-Law/blob/main/deterministic_equation_of_primes.pdf)  
+Issues and pull requests are encouraged. Please open a discussion first if you plan a larger change. For questions relating to the mathematics itself or potential collaborations, contact the author.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
 ## Author
 
-**Budd McCrackn**  
-Contact: \[[ptxboxone@gmail.com](mailto:ptxboxone@gmail.com)]
+**Budd McCrackn** – [ptxboxone@gmail.com](mailto:ptxboxone@gmail.com)
 
----
-
-*Last updated: 2025-06-05*
+_Last updated: 2025-06-05_
