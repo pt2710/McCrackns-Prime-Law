@@ -1,4 +1,5 @@
 # McCrackn’s Prime Law
+[![CI](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml/badge.svg)](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml)
 
 _Repository slug:_ `mccrackns_prime_law`
 
