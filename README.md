@@ -36,7 +36,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-To run all scientific tests:
+To run all tests:
 
 ```bash
 python test_mccrackns_prime_law.py
