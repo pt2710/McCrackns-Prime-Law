@@ -39,7 +39,7 @@ pip install -r requirements.txt
 To run all scientific tests:
 
 ```bash
-python test_mccrackn_conjector.py
+python test_mccrackns_prime_law.py
 ```
 
 All generated output (CSV data, PNGs) will be saved in the `figures/` directory.
@@ -47,7 +47,7 @@ All generated output (CSV data, PNGs) will be saved in the `figures/` directory.
 To generate the prime sequence up to a specified limit, for example \(10^7\):
 
 ```bash
-python mccrackn_conjector.py --limit 10000000
+python mccrackns_prime_law.py --limit 10000000
 ```
 
 ---
