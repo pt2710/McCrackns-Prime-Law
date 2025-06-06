@@ -88,21 +88,18 @@ traditional sieve implementation:
 $ python bench_stream.py
 
 === n = 10,000 ===
-First 20: [2, 3, 5, 7, 11, 13, 19, 31, 39, 53, 65, 89, 107, 127, 163, 177, 203, 241, 259, 295]
-mpl_stream 0.001192s   sieve 0.004408s   speed-up   3.7×
+First 20: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71]
+Last  20: [104549, 104551, 104561, 104579, 104593, 104597, 104623, 104639, 104651, 104659, 104677, 104681, 104683, 104693, 104701, 104707, 104711, 104717, 104723, 104729]
+mpl_stream 0.093s   sieve 0.007s   speed-up   0.1×
 
 === n = 100,000 ===
-mpl_stream 0.011840s   sieve 0.061424s   speed-up   5.2×
-
-=== n = 1,000,000 ===
-mpl_stream 0.189402s   sieve 0.832181s   speed-up   4.4×
-
-=== n = 10,000,000 ===
-mpl_stream 1.859073s   sieve 11.542596s   speed-up   6.2×
+First 20: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71]
+Last  20: [1299379, 1299437, 1299439, 1299449, 1299451, 1299457, 1299491, 1299499, 1299533, 1299541, 1299553, 1299583, 1299601, 1299631, 1299637, 1299647, 1299653, 1299673, 1299689, 1299709]
+mpl_stream 3.32s   sieve 0.081s   speed-up   0.0×
 ```
 
-These results were produced on the Codex test environment and demonstrate
-significant speed-ups over the naive sieve approach.
+These results were produced on the Codex test environment. In this configuration
+the naive sieve remains faster than the simple streaming approach.
 
 ---
 
