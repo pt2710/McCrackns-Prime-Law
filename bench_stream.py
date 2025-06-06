@@ -1,7 +1,11 @@
-import time, math
+"""Benchmark MPL prime generation against a simple sieve."""
+
+import time
+import math
 from mpl_stream import MPLStream
 
 def sieve(n: int):
+    """Return the first ``n`` primes using a basic sieve."""
     lim = 15 if n < 6 else int(n*(math.log(n)+math.log(math.log(n))))+10
     while True:
         b = bytearray(b"\x01")*(lim+1); b[:2]=b"\x00\x00"
@@ -12,6 +16,7 @@ def sieve(n: int):
         lim*=2
 
 def bench(n: int):
+    """Run one benchmark iteration for ``n`` primes."""
     t0=time.perf_counter(); g=MPLStream(n); g.generate(); t_fast=time.perf_counter()-t0
     t0=time.perf_counter(); sieve(n);       t_sieve=time.perf_counter()-t0
     print(f"\n=== n = {n:,} ===")

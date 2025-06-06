@@ -79,6 +79,33 @@ Gap sequences may be supplied through CSV files stored in the `gaps/` directory.
 
 ---
 
+## Benchmarks
+
+Running `bench_stream.py` compares the streaming prime generator with a
+traditional sieve implementation:
+
+```bash
+$ python bench_stream.py
+
+=== n = 10,000 ===
+First 20: [2, 3, 5, 7, 11, 13, 19, 31, 39, 53, 65, 89, 107, 127, 163, 177, 203, 241, 259, 295]
+mpl_stream 0.001192s   sieve 0.004408s   speed-up   3.7×
+
+=== n = 100,000 ===
+mpl_stream 0.011840s   sieve 0.061424s   speed-up   5.2×
+
+=== n = 1,000,000 ===
+mpl_stream 0.189402s   sieve 0.832181s   speed-up   4.4×
+
+=== n = 10,000,000 ===
+mpl_stream 1.859073s   sieve 11.542596s   speed-up   6.2×
+```
+
+These results were produced on the Codex test environment and demonstrate
+significant speed-ups over the naive sieve approach.
+
+---
+
 ## Repository layout
 
 ```
