@@ -1,0 +1,8 @@
+Add-Type -AssemblyName System.Numerics
+$exp  = 82589933
+$Pbig = [System.Numerics.BigInteger]::Pow(2, $exp) - 1
+
+# Write it as raw ASCII digits into Pbig.txt
+# (this is fast and doesn’t buffer in PS)
+$Pbig.ToString() | Out-File -Encoding ASCII pbig.txt
+Write-Host "✅ Wrote Pbig to pbig.txt (≈24.9 million digits)"
