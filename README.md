@@ -118,7 +118,7 @@ mccrackns_prime_law/
 ├── mccrackns_prime_law.py         # Single‑file reference implementation
 ├── next_prime.py                  # CLI helper
 ├── numbers_domains.py             # Support module
-├── precompute_motifs.py           # Data‑generation script
+├── compute_motifs.py              # Data‑generation script
 ├── motifs_10m.csv                 # Pre‑computed dataset (Git LFS pointer)
 ├── LICENSE                        # MIT License
 ├── README.md                      # Project overview (this file)

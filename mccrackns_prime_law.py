@@ -77,34 +77,43 @@ class McCracknsPrimeLaw:
 
     def generate_step(self):
         """
-        Generate exactly one more prime+motif.
+        Generate exactly one more prime+motif (advance by one step).
+        Returns (label, run) for the newly generated motif.
         """
-        idx  = self._next_index
+        idx = self._next_index
         last = self.primes[-1]
 
+        # regime print
         if self.verbose and idx in self.regime_set:
             print(f"[REGIME] innovation at n={idx}")
 
-        # find minimal legal even gap
+        # find minimal legal gap
         for g in self.GAP_CANDIDATES:
             cand = last + g
             if self._is_prime(cand):
-                # record prime and gap
+                # record prime & gap
                 self.primes.append(cand)
                 self.gaps.append(g)
-                # record motif
+
+                # motif bookkeeping
                 label = self.domains.canonical_motif(g)
                 raw   = label.split(".", 1)[0]
                 self.domain_run_counts[raw] += 1
+
                 self.label_run_counts[label] += 1
                 run = self.label_run_counts[label]
-                self.motif_history.append((label, run))
 
                 if self.verbose:
                     print(f"[STEP {idx}] Prime: {last}, Motif: '{label}', Gap: {g}, Next prime: {cand}")
-                break
 
-        self._next_index += 1
+                # advance our counter
+                self._next_index += 1
+
+                return label, run
+
+        # shouldn’t happen if law is correct
+        raise RuntimeError(f"No prime found at step {idx}")
+
 
     def generate(self):
         """Generate all primes up to n_primes."""
