@@ -1,38 +1,51 @@
+# mccrackns_prime_law.py
+
 from collections import defaultdict
 from numbers_domains import NumbersDomains
 
 class McCracknsPrimeLaw:
     __slots__ = (
-        "n_primes", "domains", "primes", "gaps",
-        "domain_run_counts", "label_run_counts", "motif_history",
-        "verbose", "regime_points", "regime_set",
-        "_prime_cache", "_next_index"
+        "n_primes",
+        "domains",
+        "primes",
+        "gaps",
+        "domain_run_counts",
+        "label_run_counts",
+        "motif_history",
+        "verbose",
+        "regime_points",
+        "regime_set",
+        "_prime_cache",
+        "_next_index"
     )
 
     N0 = 6
+    # prebuilt once for all instances
     GAP_CANDIDATES = tuple(range(2, 10_000, 2))
 
     def __init__(self, n_primes=100, domain_classifier=None, verbose=False):
         self.n_primes          = n_primes
         self.domains           = domain_classifier or NumbersDomains()
+        # seed arrays
         self.primes            = [2, 3, 5, 7, 11, 13]
         self.gaps              = [1, 2, 2, 4, 2]
+        # motif bookkeeping
         self.domain_run_counts = defaultdict(int)
         self.label_run_counts  = defaultdict(int)
         self.motif_history     = []
         self.verbose           = verbose
 
-        # regime innovation points (still used for logging, not for offsets)
+        # regime‐innovation points
         self.regime_points     = self._compute_regime_points(n_primes)
         self.regime_set        = set(self.regime_points)
 
-        # prime‐test cache
+        # internal cache
         self._prime_cache      = {}
 
-        # seed the first motifs
+        # initialize motif_history from the seed gaps
         self._initialize_motifs()
 
-        # position of next prime to generate
+        # streaming index: next prime to generate is at this index
         self._next_index       = len(self.primes)
 
     def _compute_regime_points(self, n_primes):
@@ -44,14 +57,19 @@ class McCracknsPrimeLaw:
         return pts
 
     def _initialize_motifs(self):
+        drc = self.domain_run_counts
+        lrc = self.label_run_counts
+        mh  = self.motif_history
+
         for g in self.gaps:
             label = self.domains.canonical_motif(g)
             raw   = label.split(".", 1)[0]
-            self.domain_run_counts[raw] += 1
-            self.label_run_counts[label] += 1
-            self.motif_history.append((label, self.label_run_counts[label]))
+            drc[raw] += 1
+            lrc[label] += 1
+            mh.append((label, lrc[label]))
 
     def _is_prime(self, n: int) -> bool:
+        """Default trial‐division primality (6k±1)."""
         cache = self._prime_cache
         if n in cache:
             return cache[n]
@@ -67,7 +85,7 @@ class McCracknsPrimeLaw:
             limit = int(n**0.5)
             i = 5
             while i <= limit:
-                if n % i == 0 or n % (i + 2) == 0:
+                if n % i == 0 or n % (i+2) == 0:
                     res = False
                     break
                 i += 6
@@ -77,15 +95,11 @@ class McCracknsPrimeLaw:
 
     def generate_step(self):
         """
-        Generate exactly one more prime+motif (advance by one step).
-        Returns (label, run) for the newly generated motif.
+        Stream exactly one more prime/gap/motif.
+        Must be called repeatedly until _next_index == n_primes.
         """
-        idx = self._next_index
+        idx  = self._next_index
         last = self.primes[-1]
-
-        # regime print
-        if self.verbose and idx in self.regime_set:
-            print(f"[REGIME] innovation at n={idx}")
 
         # find minimal legal gap
         for g in self.GAP_CANDIDATES:
@@ -102,21 +116,18 @@ class McCracknsPrimeLaw:
 
                 self.label_run_counts[label] += 1
                 run = self.label_run_counts[label]
+                self.motif_history.append((label, run))
 
                 if self.verbose:
                     print(f"[STEP {idx}] Prime: {last}, Motif: '{label}', Gap: {g}, Next prime: {cand}")
 
-                # advance our counter
-                self._next_index += 1
+                break
 
-                return label, run
-
-        # shouldn’t happen if law is correct
-        raise RuntimeError(f"No prime found at step {idx}")
-
+        # advance stream index
+        self._next_index += 1
 
     def generate(self):
-        """Generate all primes up to n_primes."""
+        """Generate all remaining primes/motifs in one go."""
         while self._next_index < self.n_primes:
             self.generate_step()
 
