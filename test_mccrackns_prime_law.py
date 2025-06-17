@@ -128,19 +128,35 @@ def main_gap_and_motif_analysis(n=100_000):
     motifs = mcc.get_motifs()
     regime_points = set(mcc.regime_points)
 
-    # vectorized arrays
-    gaps = np.diff(primes)
-    motif_list, run_list = zip(*motifs)
-    domains = [m.split('.')[0] for m in motif_list]
+    # Include p1=2 as the first prime, and ensure all lists match in length
+    # For motifs: first is always "U1", run=1 (for p1=2)
+    motif_list = ["U1"] + [m[0] for m in motifs]
+    run_list   = [1]    + [m[1] for m in motifs]
+    gaps       = [1]    + mcc.get_gaps()  # First gap for p1=2 is 1 by convention
+    domains    = [m.split('.')[0] for m in motif_list]
+
+    n_full = len(primes)
+    index = np.arange(1, n_full + 1)
+
+    # Build regime column: "R1", "R2", ... at regime innovation points (rest are "")
+    regime_points_sorted = sorted(regime_points)
+    regime_col = [""] * n_full
+    for k, rp in enumerate(regime_points_sorted, 1):
+        df_idx = rp - 1  # p6 (rp=6) is at row 5, since index=1 is row 0
+        if 0 <= df_idx < len(regime_col):
+            regime_col[df_idx] = f"R{k}"
 
     df = pd.DataFrame({
-        "index": np.arange(2, n+1),
-        "prime": primes[1:],
-        "gap":   gaps,
-        "motif": pd.Categorical(motif_list),
+        "index": index,
+        "prime": primes,
+        "regime": regime_col,
+        "motif": motif_list,
         "run":   run_list,
-        "domain": pd.Categorical(domains)
+        "gap":   gaps,
+        "domain": domains,
     })
+
+
 
     # Actual plotting functions
     def plot_gap_evolution():
@@ -320,9 +336,9 @@ def main_gap_and_motif_analysis(n=100_000):
     print(f"🔖 All steps completed in {total_time:.2f}s. Figures & data under {FIGURES_DIR}/")
 
 if __name__ == "__main__":
-    test_first_n_primes(10000000)
+    test_first_n_primes(10000)
     test_innovation_points()
     test_no_duplicate_motifs()
     test_error_handling()
-    main_gap_and_motif_analysis(n=100_000_00)
+    main_gap_and_motif_analysis(n=10000)
 

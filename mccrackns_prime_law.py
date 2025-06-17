@@ -5,12 +5,11 @@ class McCracknsPrimeLaw:
     __slots__ = (
         "n_primes", "domains", "primes", "gaps",
         "domain_run_counts", "label_run_counts", "motif_history",
-        "offset_applied", "verbose", "regime_points", "regime_set",
+        "verbose", "regime_points", "regime_set",
         "_prime_cache"
     )
 
     N0 = 6
-    # Prebuilt once for all instances
     GAP_CANDIDATES = tuple(range(2, 10_000, 2))
 
     def __init__(self, n_primes=100, domain_classifier=None, verbose=False):
@@ -21,7 +20,6 @@ class McCracknsPrimeLaw:
         self.domain_run_counts = defaultdict(int)
         self.label_run_counts  = defaultdict(int)
         self.motif_history     = []
-        self.offset_applied    = False
         self.verbose           = verbose
 
         # Precompute regime points and set for O(1) checks
@@ -89,7 +87,6 @@ class McCracknsPrimeLaw:
         lab_counts    = self.label_run_counts
         history       = self.motif_history
         verbose       = self.verbose
-        offset_flag   = self.offset_applied
         target        = self.n_primes
 
         # ensure seed
@@ -104,27 +101,10 @@ class McCracknsPrimeLaw:
                 print(f"[REGIME] innovation at n={idx}")
 
             for d in self.GAP_CANDIDATES:
-                # single "-2" offset at the 6th prime
-                g = (d - 2) if (idx == 6 and not offset_flag) else d
-                if g <= 0:
-                    continue
-
+                g = d
                 cand = last + g
 
-                # skip 15 but still update domain run count
-                if cand == 15:
-                    if verbose:
-                        print("[SKIP] 15")
-                    raw = canonical(g).split(".", 1)[0]
-                    dom_counts[raw] += 1
-                    continue
-
                 if is_prime(cand):
-                    if idx == 6 and not offset_flag:
-                        offset_flag = True
-                        if verbose:
-                            print("[OFFSET] -2 at p=13")
-
                     primes.append(cand)
                     gaps.append(g)
 
@@ -138,9 +118,6 @@ class McCracknsPrimeLaw:
                     if verbose:
                         print(f"[STEP {idx}] Prime: {last}, Motif: '{label}', Gap: {g}, Next prime: {cand}")
                     break
-
-        # commit the one‐time offset change
-        self.offset_applied = offset_flag
 
     def get_primes(self):
         return self.primes
