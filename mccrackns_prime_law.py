@@ -6,7 +6,7 @@ class McCracknsPrimeLaw:
         "n_primes", "domains", "primes", "gaps",
         "domain_run_counts", "label_run_counts", "motif_history",
         "verbose", "regime_points", "regime_set",
-        "_prime_cache"
+        "_prime_cache", "_next_index"
     )
 
     N0 = 6
@@ -22,15 +22,18 @@ class McCracknsPrimeLaw:
         self.motif_history     = []
         self.verbose           = verbose
 
-        # Precompute regime points and set for O(1) checks
+        # regime innovation points (still used for logging, not for offsets)
         self.regime_points     = self._compute_regime_points(n_primes)
         self.regime_set        = set(self.regime_points)
 
-        # Internal cache for primality tests
+        # prime‐test cache
         self._prime_cache      = {}
 
-        # Seed the motif history from the initial gaps
+        # seed the first motifs
         self._initialize_motifs()
+
+        # position of next prime to generate
+        self._next_index       = len(self.primes)
 
     def _compute_regime_points(self, n_primes):
         pts = []
@@ -41,19 +44,14 @@ class McCracknsPrimeLaw:
         return pts
 
     def _initialize_motifs(self):
-        drc = self.domain_run_counts
-        lrc = self.label_run_counts
-        mh  = self.motif_history
-
         for g in self.gaps:
             label = self.domains.canonical_motif(g)
             raw   = label.split(".", 1)[0]
-            drc[raw] += 1
-            lrc[label] += 1
-            mh.append((label, lrc[label]))
+            self.domain_run_counts[raw] += 1
+            self.label_run_counts[label] += 1
+            self.motif_history.append((label, self.label_run_counts[label]))
 
     def _is_prime(self, n: int) -> bool:
-        """Default trial-division primality with 6k±1 optimization."""
         cache = self._prime_cache
         if n in cache:
             return cache[n]
@@ -77,47 +75,41 @@ class McCracknsPrimeLaw:
         cache[n] = res
         return res
 
+    def generate_step(self):
+        """
+        Generate exactly one more prime+motif.
+        """
+        idx  = self._next_index
+        last = self.primes[-1]
+
+        if self.verbose and idx in self.regime_set:
+            print(f"[REGIME] innovation at n={idx}")
+
+        # find minimal legal even gap
+        for g in self.GAP_CANDIDATES:
+            cand = last + g
+            if self._is_prime(cand):
+                # record prime and gap
+                self.primes.append(cand)
+                self.gaps.append(g)
+                # record motif
+                label = self.domains.canonical_motif(g)
+                raw   = label.split(".", 1)[0]
+                self.domain_run_counts[raw] += 1
+                self.label_run_counts[label] += 1
+                run = self.label_run_counts[label]
+                self.motif_history.append((label, run))
+
+                if self.verbose:
+                    print(f"[STEP {idx}] Prime: {last}, Motif: '{label}', Gap: {g}, Next prime: {cand}")
+                break
+
+        self._next_index += 1
+
     def generate(self):
-        primes        = self.primes
-        gaps          = self.gaps
-        regime_set    = self.regime_set
-        is_prime      = self._is_prime
-        canonical     = self.domains.canonical_motif
-        dom_counts    = self.domain_run_counts
-        lab_counts    = self.label_run_counts
-        history       = self.motif_history
-        verbose       = self.verbose
-        target        = self.n_primes
-
-        # ensure seed
-        if not primes:
-            primes.append(2)
-
-        start_idx = len(primes)
-        for idx in range(start_idx, target):
-            last = primes[-1]
-
-            if verbose and idx in regime_set:
-                print(f"[REGIME] innovation at n={idx}")
-
-            for d in self.GAP_CANDIDATES:
-                g = d
-                cand = last + g
-
-                if is_prime(cand):
-                    primes.append(cand)
-                    gaps.append(g)
-
-                    label = canonical(g)
-                    raw   = label.split(".", 1)[0]
-                    dom_counts[raw] += 1
-
-                    lab_counts[label] += 1
-                    history.append((label, lab_counts[label]))
-
-                    if verbose:
-                        print(f"[STEP {idx}] Prime: {last}, Motif: '{label}', Gap: {g}, Next prime: {cand}")
-                    break
+        """Generate all primes up to n_primes."""
+        while self._next_index < self.n_primes:
+            self.generate_step()
 
     def get_primes(self):
         return self.primes

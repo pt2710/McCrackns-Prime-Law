@@ -1,123 +1,134 @@
 # McCrackn’s Prime Law
 [![CI](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml/badge.svg)](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml)
 
-_Repository slug:_ `mccrackns_prime_law`
+_Repository slug:_ `mccrackns_prime_law`  
+**Status:** non‑profit · community‑maintained · volunteer‑run
 
 ---
 
 ## Abstract
+**McCrackn’s Prime Law** is a deterministic, recursive rule that derives every prime directly from its predecessor—no sieves, randomness, or empirical tables required.  
+The method is accompanied by mathematical proofs and validation up to \(n = 10^{7}\).
 
-This project demonstrates **McCrackn’s Prime Law** – a deterministic and recursive rule that generates each prime directly from its predecessor. The approach removes the need for search, randomization or empirical tables and is accompanied by proofs and validation up to $n=10^7$.
-
-**Full manuscript:** [McCrackns_prime_law.pdf](https://github.com/pt2710/McCrackns-Prime-Law/blob/main/McCrackns_prime_law.pdf)
+*Read the full manuscript:* [`McCrackns_prime_law.pdf`](./McCrackns_prime_law.pdf)
 
 ---
 
-## Quick start
+## Table of Contents
+- [Abstract](#abstract)
+- [Quick Start](#quick-start)
+- [Programmatic Usage](#programmatic-usage)
+- [Repository Layout](#repository-layout)
+- [Reproducibility & Open Science](#reproducibility--open-science)
+- [Community & Governance](#community--governance)
+- [Contributing](#contributing)
+- [Security](#security)
+- [License](#license)
+- [Authors & Credits](#authors--credits)
 
-1. Clone the repository and create an isolated environment:
+---
+
+## Quick Start
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate    # macOS/Linux
-venv\Scripts\activate      # Windows
+# 1. Clone & enter
+git clone https://github.com/pt2710/McCrackns-Prime-Law.git
+cd McCrackns-Prime-Law
+
+# 2. Create isolated Python env (3.9+)
+python -m venv .venv
+source .venv/bin/activate        # macOS / Linux
+# .venv\Scripts\activate.bat   # Windows (PowerShell users: Activate.ps1)
+
+# 3. Install runtime deps
 pip install -r requirements.txt
-```
 
-2. Run the main verification script:
-
-```bash
+# 4. Verify core theorem for the first 10⁵ primes
 python test_mccrackns_prime_law.py
 ```
 
-The script validates the first few primes, reports regime innovation points and can optionally generate histograms of prime gaps and motif statistics.
-
-Example output for the first 20 primes:
-
-```
-index,prime,gap,motif,run,domain
-2,3,1,U1,1,U1
-3,5,2,E1.0,1,E1
-4,7,2,E1.0,2,E1
-5,11,4,E1.1,1,E1
-6,13,2,E1.0,3,E1
-7,17,4,E1.1,2,E1
-8,19,2,E1.0,4,E1
-9,23,4,E1.1,3,E1
-10,29,6,E2.0,1,E2
-11,31,2,E1.0,5,E1
-12,37,6,E2.0,2,E2
-13,41,4,E1.1,4,E1
-14,43,2,E1.0,6,E1
-15,47,4,E1.1,5,E1
-16,53,6,E2.0,3,E2
-17,59,6,E2.0,4,E2
-18,61,2,E1.0,7,E1
-19,67,6,E2.0,5,E2
-20,71,4,E1.1,6,E1
-21,73,2,E1.0,8,E1
-```
+The script prints prime indices, local regimes, motifs and gap statistics.  
+Pass `--plot` to create histograms of prime gaps and motif frequencies.
 
 ---
 
-## Generating primes programmatically
+## Programmatic Usage
 
 ```python
 from mccrackns_prime_law import McCracknsPrimeLaw
 
-m = McCracknsPrimeLaw(n_primes=20)
-m.generate()
-print(m.get_primes())
+mpl = McCracknsPrimeLaw(n_primes=20)
+mpl.generate()
+print(mpl.get_primes())
 ```
 
 ---
 
-## Repository layout
+## Repository Layout
 
 ```
 mccrackns_prime_law/
-├── LICENSE                  
-├── README.md                
-├── requirements.txt         
-├── mccrackns_prime_law.py   
-├── precompute_motifs.py 
-├── next_prime.py 
-├── numbers_domains.py       
-├── test_mccrackns_prime_law.py
-├── src/                     
+├── .github/
+│   └── workflows/ci.yml         # Continuous‑integration pipeline
+├── configs/
+│   └── default.yaml             # Tunable parameters
+├── figures/                     # Paper‑ready plots (static)
+├── figures_visible/             # Larger PNGs & CSVs for interactive exploration
+├── src/                         # Library code (importable)
+│   ├── __init__.py
+│   ├── prime_utils.py
 │   └── your_module.py
-├── configs/                 
-│   └── default.yaml
-├── tests/                  
+├── tests/                       # Unit / regression tests
 │   └── test_basic.py
-├── .github/workflows/ci.yml 
-└── figures_visible/
+├── McCrackns_prime_law.pdf      # Formal manuscript
+├── mccrackns_prime_law.py       # Single‑file reference implementation
+├── next_prime.py                # CLI helper
+├── numbers_domains.py           # Support module
+├── motifs_10m.csv               # Pre‑computed data set
+├── precompute_motifs.py         # Data‑generation script
+├── LICENSE                      # MIT License
+├── README.md                    # You are here
+├── CONTRIBUTING.md              # How to propose changes
+├── SECURITY.md                  # Responsible‑disclosure policy
+├── requirements.txt             # Runtime dependencies
+└── setup_github.sh              # Dev‑env bootstrap
 ```
 
 ---
 
-## Reproducibility and open science
+## Reproducibility & Open Science
+All code, data, and figures are provided under an OSI‑approved license to foster independent verification.  
+Run the notebooks, re‑plot the data, or extend the proofs—then open a Pull Request or Discussion to share your findings!
 
-> This repository is provided for transparent examination by the mathematical community. All serious feedback is welcome.
+---
 
-The code, data sets and produced figures are open to facilitate independent replication. We encourage running the scripts and verifying the results locally. If you create new figures or discover interesting patterns, feel free to share them.
+## Community & Governance
+McCrackn’s Prime Law is **community‑maintained**. There is currently **no corporate backing and no single full‑time maintainer**.  
+We rely on volunteers for everything from issue triage to peer‑review of new proofs. If you’d like to help, see **[`CONTRIBUTING.md`](./CONTRIBUTING.md)**.
 
 ---
 
 ## Contributing
+Bug reports, feature requests and PRs of any size are welcome.  
+Please read the guidelines in [`CONTRIBUTING.md`](./CONTRIBUTING.md) before you start hacking.
 
-Issues and pull requests are encouraged. Please open a discussion first if you plan a larger change. For questions relating to the mathematics itself or potential collaborations, contact the author.
+---
+
+## Security
+If you believe you have found a vulnerability, **do not open a public Issue**.  
+Instead, follow the private process in [`SECURITY.md`](./SECURITY.md).
 
 ---
 
 ## License
-
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is released under the **MIT License**. See [`LICENSE`](./LICENSE) for details.
 
 ---
 
-## Author
+## Authors & Credits
+Created by **Budd McCrackn** and extended by a growing community of mathematicians, coders and prime‑enthusiasts.  
+See `AUTHORS.md` (or the GitHub contributions graph) for a full list of contributors.
 
-**Budd McCrackn** – [ptxboxone@gmail.com](mailto:ptxboxone@gmail.com)
+---
 
-_Last updated: 2025-06-05_
+_Last updated: 2025‑06‑17_
