@@ -336,9 +336,9 @@ def main_gap_and_motif_analysis(n=100_000):
     print(f"🔖 All steps completed in {total_time:.2f}s. Figures & data under {FIGURES_DIR}/")
 
 if __name__ == "__main__":
-    test_first_n_primes(10000)
+    test_first_n_primes(1000000)
     test_innovation_points()
     test_no_duplicate_motifs()
     test_error_handling()
-    main_gap_and_motif_analysis(n=10000)
+    main_gap_and_motif_analysis(n=1000000)
 
