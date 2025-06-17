@@ -9,14 +9,29 @@ _Repository slug:_ `mccrackns_prime_law`
 
 ## Abstract
 **McCrackn’s Prime Law** is a deterministic, recursive rule that derives every prime directly from its predecessor—no sieves, randomness, or empirical tables required.  
-The method is accompanied by mathematical proofs and validation up to \(n = 10^{7}\).
+The method is accompanied by mathematical proofs and validation up to \(n = 10^7\).
 
 *Read the full manuscript:* [`McCrackns_prime_law.pdf`](./McCrackns_prime_law.pdf)
 
 ---
 
+## Visual Snapshot
+
+<p align="center">
+  <img src="figures_visible/alphabet_growth.png" alt="Alphabet growth" width="30%"/>
+  <img src="figures_visible/gap_vs_run.png" alt="Gap vs run" width="30%"/>
+  <img src="figures_visible/innovations_by_regime.png" alt="Innovations by regime" width="30%"/>
+</p>
+
+| Alphabet growth | Gap vs run | Innovations by regime |
+| --------------- | ---------- | --------------------- |
+| <sub>Sequence size as the prime alphabet expands.</sub> | <sub>Prime gap size versus motif run length.</sub> | <sub>Counts of regime innovations across validated range.</sub> |
+
+---
+
 ## Table of Contents
 - [Abstract](#abstract)
+- [Visual Snapshot](#visual-snapshot)
 - [Quick Start](#quick-start)
 - [Programmatic Usage](#programmatic-usage)
 - [Repository Layout](#repository-layout)
@@ -35,27 +50,18 @@ The method is accompanied by mathematical proofs and validation up to \(n = 10^{
 > Install LFS once via `git lfs install` *before* cloning or pulling.
 
 ```bash
-# 1 · Clone & enter
 git clone https://github.com/pt2710/McCrackns-Prime-Law.git
 cd McCrackns-Prime-Law
-
-# 2 · Ensure Git LFS is enabled (one‑time per machine)
 git lfs install
 
-# 3 · Create isolated Python env (3.9+)
 python -m venv .venv
-source .venv/bin/activate        # macOS / Linux
-# .venv\Scripts\activate.bat   # Windows (PowerShell users: Activate.ps1)
-
-# 4 · Install runtime deps
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-# 5 · Verify the theorem for the first 10⁵ primes
-python test_mccrackns_prime_law.py
+python test_mccrackns_prime_law.py --plot
 ```
 
-The script prints prime indices, local regimes, motifs and gap statistics.  
-Add `--plot` to create histograms of prime gaps and motif frequencies.
+The script prints prime indices, local regimes, motifs and gap statistics and, with `--plot`, regenerates the snapshots above.
 
 ---
 
@@ -72,46 +78,32 @@ print(mpl.get_primes())
 ---
 
 ## Repository Layout
-
 ```
 mccrackns_prime_law/
-├── .github/
-│   └── workflows/ci.yml         # Continuous‑integration pipeline
 ├── .gitattributes               # Git LFS tracking rules
-├── configs/
-│   └── default.yaml             # Tunable parameters
-├── figures/                     # Paper‑ready plots (static)
-├── figures_visible/             # Interactive PNGs & CSVs (large files in LFS)
-├── src/                         # Library code (importable)
+├── figures_visible/             # Interactive PNGs & CSVs (large via LFS)
+├── src/                         # Library code
 │   ├── __init__.py
-│   ├── prime_utils.py
-│   └── your_module.py
-├── tests/                       # Unit / regression tests
+│   └── prime_utils.py
+├── tests/
 │   └── test_basic.py
 ├── McCrackns_prime_law.pdf      # Formal manuscript
-├── mccrackns_prime_law.py       # Single‑file reference implementation
-├── next_prime.py                # CLI helper
-├── numbers_domains.py           # Support module
-├── precompute_motifs.py         # Data‑generation script
-├── LICENSE                      # MIT License
-├── README.md                    # You are here
-├── CONTRIBUTING.md              # How to propose changes
-├── SECURITY.md                  # Responsible‑disclosure policy
-├── requirements.txt             # Runtime dependencies
-└── motifs_10m.csv               # Pre‑computed data set (LFS pointer)
+├── motifs_10m.csv               # Pre‑computed dataset (LFS pointer)
+└── ...
 ```
+
+*(see full tree in the repo)*
 
 ---
 
 ## Reproducibility & Open Science
-All code, data and figures are provided under an OSI‑approved license to foster independent verification.  
-Run the notebooks, re‑plot the data, or extend the proofs—then open a Pull Request or Discussion to share your findings!
+All code, data and figures are provided under an OSI‑approved license to foster independent verification.
 
 ---
 
 ## Community & Governance
-McCrackn’s Prime Law is **community‑maintained**. There is currently **no corporate backing and no single full‑time maintainer**.  
-We rely on volunteers for everything from issue triage to peer‑review of new proofs. If you’d like to help, see **[`CONTRIBUTING.md`](./CONTRIBUTING.md)**.
+This project has no corporate backing and relies entirely on volunteers.  
+See **[`CONTRIBUTING.md`](./CONTRIBUTING.md)** to learn how to help.
 
 ---
 
@@ -128,14 +120,11 @@ Instead, follow the private process in [`SECURITY.md`](./SECURITY.md).
 ---
 
 ## License
-This project is released under the **MIT License**. See [`LICENSE`](./LICENSE) for details.
+Released under the **MIT License**. See [`LICENSE`](./LICENSE).
 
 ---
 
 ## Authors & Credits
-Created by **Budd McCrackn** and extended by a growing community of mathematicians, coders and prime‑enthusiasts.  
-See `AUTHORS.md` (or the GitHub contributions graph) for a full list of contributors.
+Created by **Budd McCrackn** with help from a growing community of prime‑enthusiasts.
 
----
-
-_Last updated: 2025‑06‑17_
+_Last updated: 2025-06-17_
