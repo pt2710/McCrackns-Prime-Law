@@ -1,6 +1,6 @@
-
 # McCrackn’s Prime Law
 [![CI](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml/badge.svg)](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15696112.svg)](https://doi.org/10.5281/zenodo.15696112)
 
 _Repository slug:_ `mccrackns_prime_law`  
 **Status:** non‑profit · community‑maintained · volunteer‑run
@@ -11,7 +11,9 @@ _Repository slug:_ `mccrackns_prime_law`
 **McCrackn’s Prime Law** is a deterministic, recursive rule that derives every prime directly from its predecessor—no sieves, randomness, or empirical tables required.  
 The method is accompanied by mathematical proofs and validation up to \(n = 10^7\).
 
-*Read the full manuscript:* [`McCrackns_prime_law.pdf`](./McCrackns_prime_law.pdf)
+📄 **Read the full manuscript on Zenodo:** [https://doi.org/10.5281/zenodo.15696112](https://doi.org/10.5281/zenodo.15696112)
+
+*Or view the local version:* [`McCrackns_prime_law.pdf`](./McCrackns_prime_law.pdf)
 
 ---
 
@@ -132,7 +134,7 @@ mccrackns_prime_law/
 ```
 </details>
 
-*(Generated 2025-06-17; run `tree -L 3` to refresh.)*
+*(Generated 2025-06-23; run `tree -L 3` to refresh.)*
 
 ---
 
@@ -171,4 +173,4 @@ See `AUTHORS.md` (or the GitHub contributions graph) for a full list of contribu
 
 ---
 
-_Last updated: 2025-06-17_
+_Last updated: 2025-06-23_
