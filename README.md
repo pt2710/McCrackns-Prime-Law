@@ -95,37 +95,40 @@ mccrackns_prime_law/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml                 # CI pipeline (pytest + lint)
-├── .gitattributes                 # Git LFS patterns
 ├── configs/
 │   └── default.yaml               # Tunable parameters
-├── docs/
-│   └── notes/                     # Extended derivations & experiments
-├── figures/                       # Paper‑ready static SVG/PNG
 ├── figures_visible/               # Interactive PNGs & CSVs (LFS pointers)
+│   ├── chunks/
 │   ├── alphabet_growth.png
+│   ├── cumulative_motifs.png
+│   ├── gap_boxplot_by_domain.png
+│   ├── gap_evolution_domains.png
 │   ├── gap_vs_run.png
 │   └── innovations_by_regime.png
 ├── src/
 │   ├── __init__.py
-│   ├── prime_utils.py             # Core helpers
-│   ├── sequence_generators.py     # Alternative implementations
-│   └── visualise.py               # Plot helpers
+│   ├── prime_utils.py             
+│   └── your_module.py             
 ├── tests/
-│   ├── __init__.py
-│   ├── test_basic.py
-│   └── test_regressions.py
+│   └── test_basic.py
+├── .gitattributes                 
+├── .gitconfig      
+├── .gitignore                     
+├── CODE_OF_CUNDUCT.md      
+├── compute_motifs.py              # Compute motifs     
+├── CONTRIBUTING.md                # Contribution guidelines
+├── LICENSE                        # MIT License
+├── MAINTAINERS.md
 ├── McCrackns_prime_law.pdf        # Formal manuscript
 ├── mccrackns_prime_law.py         # Single‑file reference implementation
 ├── next_prime.py                  # CLI helper
 ├── numbers_domains.py             # Support module
-├── compute_motifs.py              # Data‑generation script
-├── motifs_10m.csv                 # Pre‑computed dataset (Git LFS pointer)
-├── LICENSE                        # MIT License
 ├── README.md                      # Project overview (this file)
-├── CONTRIBUTING.md                # Contribution guidelines
-├── SECURITY.md                    # Responsible‑disclosure policy
 ├── requirements.txt               # Runtime dependencies
-└── requirements-dev.txt           # Dev/test tooling (black, ruff, pytest)
+├── ruleset.json
+├── SECURITY.md                    # Responsible‑disclosure policy
+├── state.json
+└── test_mccrackns_prime_law.py
 ```
 </details>
 
