@@ -10,4 +10,8 @@ Thumbs.db
 .idea/
 figures/
 gaps/
-motifs_82m.csv
+split_motif_data.py
+motifs_500k.csv
+figures_visible/motif_data.csv
+
+
