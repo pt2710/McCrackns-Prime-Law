@@ -1,31 +1,42 @@
-#!/usr/bin/env python3
 """
-Deterministically compute the next prime p_{n+1} from a given p_n
+Deterministically compute the next prime \( p_{n+1} \) from a given \( p_n \)
 according to McCrackn’s Prime Law.
 
 Examples
 --------
-# explicit p_n
+# Provide explicit p_n
 python next_prime.py --P 97 --n 25      # returns 101
 
 # Mersenne form 2^e − 1 (e.g. 2^5 − 1 = 31)
 python next_prime.py --exp 5 --n 11     # returns 37
+
+This script reconstructs the motif structure up to index `n`, inserts the known
+prime `p_n`, then computes the next deterministic prime according to the law's motif logic.
 """
-import argparse, time
+
+import argparse
+import time
 from mccrackns_prime_law import McCracknsPrimeLaw
 
 
 def build_law_with_prefix(p_n: int, n: int) -> McCracknsPrimeLaw:
     """
-    Return a McCracknsPrimeLaw instance whose first n primes end with p_n.
+    Construct a McCrackn’s Prime Law instance with prefix ending in p_n at index n.
 
-    Assumes p_n really *is* the deterministic n-th prime.
+    Parameters:
+        p_n (int): The known n-th prime.
+        n   (int): The 1-based index of p_n in the prime sequence.
+
+    Returns:
+        McCracknsPrimeLaw: Law instance preloaded up to p_n with its motif state.
     """
     law = McCracknsPrimeLaw(n_primes=n + 1, verbose=False)
 
+    # Step until we have generated enough primes to safely set p_n
     for _ in range(len(law.primes), n - 1):
         law.generate_one()
 
+    # Replace or append p_n at index n−1
     if len(law.primes) >= n:
         law.primes[n - 1] = p_n
     else:
@@ -35,6 +46,9 @@ def build_law_with_prefix(p_n: int, n: int) -> McCracknsPrimeLaw:
 
 
 def main() -> None:
+    """
+    Parse CLI args and compute p_{n+1} from p_n using motif logic.
+    """
     pa = argparse.ArgumentParser(description="Compute p_{n+1} from p_n.")
     grp = pa.add_mutually_exclusive_group(required=True)
     grp.add_argument("--P",   type=int,
@@ -45,13 +59,16 @@ def main() -> None:
                     help="Index n (1-based) of the given prime p_n")
     args = pa.parse_args()
 
+    # Decode p_n from either direct input or exponent form
     p_n = args.P if args.P is not None else (1 << args.exp) - 1
     n   = args.n
 
+    # Build law instance ending at p_n
     law = build_law_with_prefix(p_n, n)
 
+    # Advance one prime deterministically
     law.generate_one()
-    p_np1 = law.primes[n]   
+    p_np1 = law.primes[n]
 
     print(f"p_{n+1} = {p_np1}")
 
