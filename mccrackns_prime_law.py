@@ -1,141 +1,151 @@
 # mccrackns_prime_law.py
 
-from collections import defaultdict
+from math import gcd
 from numbers_domains import NumbersDomains
 
 class McCracknsPrimeLaw:
-    __slots__ = (
-        "n_primes",
-        "domains",
-        "primes",
-        "gaps",
-        "domain_run_counts",
-        "label_run_counts",
-        "motif_history",
-        "verbose",
-        "regime_points",
-        "regime_set",
-        "_prime_cache",
-        "_next_index"
-    )
 
-    N0 = 6
-    # prebuilt once for all instances
-    GAP_CANDIDATES = tuple(range(2, 10_000, 2))
+    def __init__(self, *, n_primes: int = 100, verbose: bool = False,
+                 progress_every: int = 1000):
+        self.n_primes       = max(2, n_primes)
+        self.verbose        = verbose
+        self.progress_every = max(1, progress_every)
 
-    def __init__(self, n_primes=100, domain_classifier=None, verbose=False):
-        self.n_primes          = n_primes
-        self.domains           = domain_classifier or NumbersDomains()
-        # seed arrays
-        self.primes            = [2, 3, 5, 7, 11, 13]
-        self.gaps              = [1, 2, 2, 4, 2]
-        # motif bookkeeping
-        self.domain_run_counts = defaultdict(int)
-        self.label_run_counts  = defaultdict(int)
-        self.motif_history     = []
-        self.verbose           = verbose
+        seed_primes = [2, 3, 5, 7, 11, 13]
+        self.primes = seed_primes[:self.n_primes]
+        seed_gaps   = [1, 2, 2, 4, 2] 
+        seed_labels = ["U1", "E1.0", "E1.0", "E1.1", "E1.0"]
 
-        # regime‐innovation points
-        self.regime_points     = self._compute_regime_points(n_primes)
-        self.regime_set        = set(self.regime_points)
+        self.gaps   = seed_gaps[:len(self.primes)-1]
+        self.motifs = [("U1", 1)]
+        self._run_counter = {"U1": 1, "E1.0": 0, "E1.1": 0}
+        for lbl in seed_labels[:len(self.primes)-1]:
+            run = self._run_counter.get(lbl, 0) + 1
+            self._run_counter[lbl] = run
+            self.motifs.append((lbl, run))
 
-        # internal cache
-        self._prime_cache      = {}
+        self.domains      = NumbersDomains()
+        self.regime_idx   = 1
+        self.primorial    = 2 * 3
+        self.alphabet     = ["U1", "E1.0"]
+        self._sort_alpha()
+        self.used_motifs  = set(self.alphabet)
+        self.regime_points = []
 
-        # initialize motif_history from the seed gaps
-        self._initialize_motifs()
+        if len(self.primes) >= 6:
+            self._bump_regime()
 
-        # streaming index: next prime to generate is at this index
-        self._next_index       = len(self.primes)
+    @staticmethod
+    def _gap(label: str) -> int:
+        if label == "U1":
+            return 1
+        k, x = map(int, label[1:].split("."))
+        if k == 1:
+            return 1 << (x + 1)
+        return (1 << (k - 1)) * (2 * x + 3)
 
-    def _compute_regime_points(self, n_primes):
-        pts = []
-        w = self.N0
-        while w < n_primes:
-            pts.append(w)
-            w <<= 1
-        return pts
+    def _sort_alpha(self):
+        self.alphabet.sort(
+            key=lambda lbl: (self._gap(lbl),) + tuple(map(int, lbl[1:].split(".")))
+        )
 
-    def _initialize_motifs(self):
-        drc = self.domain_run_counts
-        lrc = self.label_run_counts
-        mh  = self.motif_history
+    def _next_motif(self) -> str:
+        g = self._gap(self.alphabet[-1]) + 2
+        while True:
+            lbl = self.domains.canonical_motif(g)
+            if lbl != "U1" and lbl not in self.alphabet:
+                return lbl
+            g += 2
 
-        for g in self.gaps:
-            label = self.domains.canonical_motif(g)
-            raw   = label.split(".", 1)[0]
-            drc[raw] += 1
-            lrc[label] += 1
-            mh.append((label, lrc[label]))
+    def _bump_regime(self):
+        self.regime_points.append(len(self.primes))
 
-    def _is_prime(self, n: int) -> bool:
-        """Default trial‐division primality (6k±1)."""
-        cache = self._prime_cache
-        if n in cache:
-            return cache[n]
+        self.alphabet.append(self._next_motif())
+        self._sort_alpha()
 
-        if n < 2:
-            res = False
-        elif n < 4:
-            res = True
-        elif n % 6 not in (1, 5):
-            res = False
-        else:
-            res = True
-            limit = int(n**0.5)
-            i = 5
-            while i <= limit:
-                if n % i == 0 or n % (i+2) == 0:
-                    res = False
-                    break
-                i += 6
+        self.regime_idx += 1
+        while len(self.primes) <= self.regime_idx:
+            self._single_step(internal=True)
+        self.primorial *= self.primes[self.regime_idx]
 
-        cache[n] = res
-        return res
+        self.used_motifs.clear()
 
-    def generate_step(self):
-        """
-        Stream exactly one more prime/gap/motif.
-        Must be called repeatedly until _next_index == n_primes.
-        """
-        idx  = self._next_index
-        last = self.primes[-1]
+    def _record(self, cand: int, gap: int, label: str):
+        self.primes.append(cand)
+        self.gaps.append(gap)
+        run = self._run_counter.get(label, 0) + 1
+        self._run_counter[label] = run
+        self.motifs.append((label, run))
 
-        # find minimal legal gap
-        for g in self.GAP_CANDIDATES:
-            cand = last + g
-            if self._is_prime(cand):
-                # record prime & gap
-                self.primes.append(cand)
-                self.gaps.append(g)
+        self.used_motifs.add(label)
+        if len(self.used_motifs) == len(self.alphabet):
+            self._bump_regime()
 
-                # motif bookkeeping
-                label = self.domains.canonical_motif(g)
-                raw   = label.split(".", 1)[0]
-                self.domain_run_counts[raw] += 1
+   
+    def _single_step(self, *, internal: bool = False):
+        
+        if len(self.primes) < 6:
+            return
 
-                self.label_run_counts[label] += 1
-                run = self.label_run_counts[label]
-                self.motif_history.append((label, run))
+        while True:
+            p_curr = self.primes[-1]
+            P      = self.primorial 
 
-                if self.verbose:
-                    print(f"[STEP {idx}] Prime: {last}, Motif: '{label}', Gap: {g}, Next prime: {cand}")
+            for lbl in self.alphabet:
+                gap  = self._gap(lbl)
+                cand = p_curr + gap
 
-                break
+                if gcd(cand, P) != 1:
+                    continue 
 
-        # advance stream index
-        self._next_index += 1
+                while cand >= self.primes[self.regime_idx] ** 2:
+                    self._bump_regime() 
+                    P = self.primorial
+                    if gcd(cand, P) != 1:
+                        break  
+                else:
+                    self._record(cand, gap, lbl)
+
+                    if self.verbose and not internal and \
+                       len(self.primes) % self.progress_every == 0:
+                        print(f"[prime {len(self.primes):>9}] {cand}")
+                    return 
+
+            self.alphabet.append(self._next_motif())
+            self._sort_alpha()
 
     def generate(self):
-        """Generate all remaining primes/motifs in one go."""
-        while self._next_index < self.n_primes:
-            self.generate_step()
+        while len(self.primes) < self.n_primes:
+            self._single_step()
+        return self.primes
+    
+    def generate_one(self):
+        """Advance by exactly **one** prime and return (index, prime, gap, motif)."""
+        if len(self.primes) < self.n_primes:
+            self._single_step()
+        idx  = len(self.primes)
+        p    = self.primes[-1]
+        gap  = 0 if idx == 1 else self.gaps[-1]
+        motif = "U1" if idx == 1 else self.motifs[-1][0]
+        return idx, p, gap, motif
+
+
+    def stream_primes(self, *, start_idx=1):
+        """Yield (idx, prime, gap, motif) indefinitely up to n_primes."""
+        while len(self.primes) < self.n_primes:
+            self._single_step()
+            idx = len(self.primes)
+            if idx >= start_idx:
+                p    = self.primes[-1]
+                gap  = 0 if idx == 1 else self.gaps[-1]
+                motif = "U1" if idx == 1 else self.motifs[-1][0]
+                yield idx, p, gap, motif
 
     def get_primes(self):
-        return self.primes
+        return self.primes.copy()
 
     def get_gaps(self):
-        return self.gaps
+        return self.gaps.copy()
 
     def get_motifs(self):
-        return self.motif_history
+        return self.motifs[1:].copy() 
