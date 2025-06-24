@@ -11,7 +11,9 @@ _Repository slug:_ `mccrackns_prime_law`
 **McCrackn’s Prime Law** is a deterministic, recursive rule that derives every prime directly from its predecessor—no sieves, randomness, or empirical tables required.  
 The method is accompanied by mathematical proofs and validation up to \(n = 10^7\).
 
-📄 **Read the full manuscript on Zenodo:** [https://doi.org/10.5281/zenodo.15696112](https://doi.org/10.5281/zenodo.15696112)
+📄 **Read the full manuscript on Zenodo:** [https://doi.org/10.5281/zenodo.15696112](https://doi.org/10.5281/zenodo.15696112)  
+✉️ **Contact:** [thenothingnesseffect@gmail.com](mailto:thenothingnesseffect@gmail.com)  
+🧬 **ORCID:** [0009-0001-4400-0171](https://orcid.org/0009-0001-4400-0171)
 
 *Or view the local version:* [`McCrackns_prime_law.pdf`](./McCrackns_prime_law.pdf)
 
@@ -96,10 +98,10 @@ print(mpl.get_primes())
 mccrackns_prime_law/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                 # CI pipeline (pytest + lint)
+│       └── ci.yml
 ├── configs/
-│   └── default.yaml               # Tunable parameters
-├── figures_visible/               # Interactive PNGs & CSVs (LFS pointers)
+│   └── default.yaml
+├── figures_visible/
 │   ├── chunks/
 │   ├── alphabet_growth.png
 │   ├── cumulative_motifs.png
@@ -109,32 +111,30 @@ mccrackns_prime_law/
 │   └── innovations_by_regime.png
 ├── src/
 │   ├── __init__.py
-│   ├── prime_utils.py             
-│   └── your_module.py             
+│   ├── prime_utils.py
+│   └── your_module.py
 ├── tests/
 │   └── test_basic.py
-├── .gitattributes                 
-├── .gitconfig      
-├── .gitignore                     
-├── CODE_OF_CUNDUCT.md      
-├── compute_motifs.py              # Compute motifs     
-├── CONTRIBUTING.md                # Contribution guidelines
-├── LICENSE                        # MIT License
+├── .gitattributes
+├── .gitconfig
+├── .gitignore
+├── CODE_OF_CUNDUCT.md
+├── compute_motifs.py
+├── CONTRIBUTING.md
+├── LICENSE
 ├── MAINTAINERS.md
-├── McCrackns_prime_law.pdf        # Formal manuscript
-├── mccrackns_prime_law.py         # Single‑file reference implementation
-├── next_prime.py                  # CLI helper
-├── numbers_domains.py             # Support module
-├── README.md                      # Project overview (this file)
-├── requirements.txt               # Runtime dependencies
+├── McCrackns_prime_law.pdf
+├── mccrackns_prime_law.py
+├── next_prime.py
+├── numbers_domains.py
+├── README.md
+├── requirements.txt
 ├── ruleset.json
-├── SECURITY.md                    # Responsible‑disclosure policy
+├── SECURITY.md
 ├── state.json
 └── test_mccrackns_prime_law.py
 ```
 </details>
-
-*(Generated 2025-06-23; run `tree -L 3` to refresh.)*
 
 ---
 
@@ -146,7 +146,7 @@ Run the notebooks, re‑plot the data, or extend the proofs—then open a Pull R
 
 ## Community & Governance
 McCrackn’s Prime Law is **community‑maintained**. There is currently **no corporate backing and no single full‑time maintainer**.  
-We rely on volunteers for everything from issue triage to peer‑review of new proofs. If you’d like to help, see **[`CONTRIBUTING.md`](./CONTRIBUTING.md)**.
+We rely on volunteers for everything from issue triage to peer‑review of new proofs. If you’d like to help, see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ---
 
@@ -168,9 +168,14 @@ This project is released under the **MIT License**. See [`LICENSE`](./LICENSE) f
 ---
 
 ## Authors & Credits
-Created by **Budd McCrackn** and extended by a growing community of mathematicians, coders and prime‑enthusiasts.  
+Created by **Budd McCrackn**  
+📧 Contact: [thenothingnesseffect@gmail.com](mailto:thenothingnesseffect@gmail.com)  
+🔗 ORCID: [0009-0001-4400-0171](https://orcid.org/0009-0001-4400-0171)
+
+...extended by a growing community of mathematicians, coders and prime‑enthusiasts.  
 See `AUTHORS.md` (or the GitHub contributions graph) for a full list of contributors.
 
 ---
 
-_Last updated: 2025-06-23_
+_Last updated: 2025-06-24_
+025-06-23_
