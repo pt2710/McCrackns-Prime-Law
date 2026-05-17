@@ -2,7 +2,7 @@
 McCrackn’s Prime Law — Deterministic, recursive prime generator based on motif algebra.
 
 Seed invariant:
-- U1 (gap = 1) occurs exactly once for 2 → 3.
+- U1 (gap = 1) occurs exactly once for 2 -> 3.
 - All subsequent prime gaps are even.
 
 GCD is retained strictly as a structural invariant (termination sentinel),
@@ -40,7 +40,7 @@ class McCracknsPrimeLaw:
         self.regime_idx = 1
         self.primorial  = 2 * 3
 
-        # U1 is seed-only and must NOT be in runtime alphabet
+        # U1 is seed-only and must NOT be in runtime alphabet.
         self.alphabet = ["E1.0"]
         self._sort_alpha()
 
@@ -49,6 +49,10 @@ class McCracknsPrimeLaw:
 
         if len(self.primes) >= 6:
             self._bump_regime()
+            # The seeded prefix ends with 11 -> 13 using E1.0. The active
+            # post-bootstrap regime must therefore start with E1.0 exhausted,
+            # so the next motif at p=13 is E1.1 (gap 4), producing 17.
+            self.used_motifs = {"E1.0"}
 
     @staticmethod
     def _gap(label: str) -> int:
@@ -112,6 +116,9 @@ class McCracknsPrimeLaw:
             P      = self.primorial
 
             for lbl in self.alphabet:
+                if lbl in self.used_motifs:
+                    continue
+
                 gap  = self._gap(lbl)
 
                 if gap == 1 or lbl == "U1":
@@ -122,7 +129,7 @@ class McCracknsPrimeLaw:
 
                 cand = p_curr + gap
 
-                # Structural invariant: must be coprime with primorial
+                # Structural invariant: must be coprime with primorial.
                 assert gcd(cand, P) == 1, \
                     f"GCD-invariant violated at candidate {cand} (P={P})"
 
