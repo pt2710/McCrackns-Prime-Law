@@ -5,7 +5,8 @@ Seed invariant:
 - U1 (gap = 1) occurs exactly once for 2 → 3.
 - All subsequent prime gaps are even.
 
-GCD is retained as a structural coprimality guard.
+GCD is retained strictly as a structural invariant (termination sentinel),
+not as an active filtering mechanism.
 """
 from math import gcd
 from numbers_domains import NumbersDomains
@@ -39,7 +40,7 @@ class McCracknsPrimeLaw:
         self.regime_idx = 1
         self.primorial  = 2 * 3
 
-        # IMPORTANT: U1 is seed-only and must NOT be in runtime alphabet
+        # U1 is seed-only and must NOT be in runtime alphabet
         self.alphabet = ["E1.0"]
         self._sort_alpha()
 
@@ -85,7 +86,6 @@ class McCracknsPrimeLaw:
         self.used_motifs.clear()
 
     def _record(self, cand: int, gap: int, label: str):
-        # Enforce invariants
         if gap == 1 and cand != 3:
             raise AssertionError(f"gap=1 leaked after seed at candidate {cand}")
         if self.primes[-1] >= 3 and gap % 2 != 0:
@@ -114,7 +114,6 @@ class McCracknsPrimeLaw:
             for lbl in self.alphabet:
                 gap  = self._gap(lbl)
 
-                # Hard guard: U1 must never reappear
                 if gap == 1 or lbl == "U1":
                     raise AssertionError("U1/gap=1 is seed-only and cannot appear in runtime")
 
@@ -123,21 +122,22 @@ class McCracknsPrimeLaw:
 
                 cand = p_curr + gap
 
-                if gcd(cand, P) != 1:
-                    continue
+                # Structural invariant: must be coprime with primorial
+                assert gcd(cand, P) == 1, \
+                    f"GCD-invariant violated at candidate {cand} (P={P})"
 
                 while cand >= self.primes[self.regime_idx] ** 2:
                     self._bump_regime()
                     P = self.primorial
-                    if gcd(cand, P) != 1:
-                        break
-                else:
-                    self._record(cand, gap, lbl)
+                    assert gcd(cand, P) == 1, \
+                        f"GCD-invariant violated after regime bump at {cand} (P={P})"
 
-                    if self.verbose and not internal and \
-                       len(self.primes) % self.progress_every == 0:
-                        print(f"[prime {len(self.primes):>9}] {cand}")
-                    return
+                self._record(cand, gap, lbl)
+
+                if self.verbose and not internal and \
+                   len(self.primes) % self.progress_every == 0:
+                    print(f"[prime {len(self.primes):>9}] {cand}")
+                return
 
             self.alphabet.append(self._next_motif())
             self._sort_alpha()
