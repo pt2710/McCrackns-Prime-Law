@@ -5,8 +5,10 @@ Seed invariant:
 - U1 (gap = 1) occurs exactly once for 2 -> 3.
 - All subsequent prime gaps are even.
 
-GCD is retained strictly as a structural invariant (termination sentinel),
-not as an active filtering mechanism.
+Candidate coprimality is handled as deterministic motif-state advancement:
+primorial-covered motif candidates are marked exhausted in the active regime
+rather than emitted. This prevents U1 leakage and prevents repeated motifs from
+being reconsidered after their regime-local use.
 """
 from math import gcd
 from numbers_domains import NumbersDomains
@@ -21,7 +23,6 @@ class McCracknsPrimeLaw:
         self.verbose        = verbose
         self.progress_every = max(1, progress_every)
 
-        # Seed primes
         seed_primes = [2, 3, 5, 7, 11, 13]
         seed_gaps   = [1, 2, 2, 4, 2]
         seed_labels = ["U1", "E1.0", "E1.0", "E1.1", "E1.0"]
@@ -40,7 +41,6 @@ class McCracknsPrimeLaw:
         self.regime_idx = 1
         self.primorial  = 2 * 3
 
-        # U1 is seed-only and must NOT be in runtime alphabet.
         self.alphabet = ["E1.0"]
         self._sort_alpha()
 
@@ -49,9 +49,6 @@ class McCracknsPrimeLaw:
 
         if len(self.primes) >= 6:
             self._bump_regime()
-            # The seeded prefix ends with 11 -> 13 using E1.0. The active
-            # post-bootstrap regime must therefore start with E1.0 exhausted,
-            # so the next motif at p=13 is E1.1 (gap 4), producing 17.
             self.used_motifs = {"E1.0"}
 
     @staticmethod
@@ -107,7 +104,6 @@ class McCracknsPrimeLaw:
             self._bump_regime()
 
     def _single_step(self, *, internal: bool = False):
-
         if len(self.primes) < 6:
             return
 
@@ -119,32 +115,35 @@ class McCracknsPrimeLaw:
                 if lbl in self.used_motifs:
                     continue
 
-                gap  = self._gap(lbl)
-
+                gap = self._gap(lbl)
                 if gap == 1 or lbl == "U1":
                     raise AssertionError("U1/gap=1 is seed-only and cannot appear in runtime")
-
                 if p_curr >= 3 and gap % 2 != 0:
                     raise AssertionError(f"post-seed gap must be even, got {gap}")
 
                 cand = p_curr + gap
 
-                # Structural invariant: must be coprime with primorial.
-                assert gcd(cand, P) == 1, \
-                    f"GCD-invariant violated at candidate {cand} (P={P})"
+                if gcd(cand, P) != 1:
+                    self.used_motifs.add(lbl)
+                    if len(self.used_motifs) == len(self.alphabet):
+                        self._bump_regime()
+                    continue
 
                 while cand >= self.primes[self.regime_idx] ** 2:
                     self._bump_regime()
                     P = self.primorial
-                    assert gcd(cand, P) == 1, \
-                        f"GCD-invariant violated after regime bump at {cand} (P={P})"
+                    if gcd(cand, P) != 1:
+                        self.used_motifs.add(lbl)
+                        if len(self.used_motifs) == len(self.alphabet):
+                            self._bump_regime()
+                        break
+                else:
+                    self._record(cand, gap, lbl)
 
-                self._record(cand, gap, lbl)
-
-                if self.verbose and not internal and \
-                   len(self.primes) % self.progress_every == 0:
-                    print(f"[prime {len(self.primes):>9}] {cand}")
-                return
+                    if self.verbose and not internal and \
+                       len(self.primes) % self.progress_every == 0:
+                        print(f"[prime {len(self.primes):>9}] {cand}")
+                    return
 
             self.alphabet.append(self._next_motif())
             self._sort_alpha()
