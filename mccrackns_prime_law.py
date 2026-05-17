@@ -1,92 +1,71 @@
 """
 McCrackn’s Prime Law — Deterministic, recursive prime generator based on motif algebra.
 
-This class implements a novel prime-generation algorithm using regime-based motif expansion
-without trial division, sieving, or primality testing. Each new prime is derived from
-canonical gap motifs constructed and sorted recursively.
+Seed invariant:
+- U1 (gap = 1) occurs exactly once for 2 → 3.
+- All subsequent prime gaps are even.
 
-Core concepts:
-- Motifs: canonical gap encodings ("U1", "E1.0", etc.)
-- Alphabet: active motifs used to construct candidates
-- Regimes: expansion layers with motif innovation
-- Primorial: dynamic modulator constraining valid candidates
-
-The generator yields exact primes with metadata (gap, motif, regime) and supports both
-stepwise and stream-based generation.
-
-Dependencies:
-- `numbers_domains.py` must provide `NumbersDomains.canonical_motif(gap: int) -> str`
+GCD is retained as a structural coprimality guard.
 """
 from math import gcd
 from numbers_domains import NumbersDomains
-class McCracknsPrimeLaw:
-    """
-    A deterministic prime generator using motif-regime logic.
 
-    Args:
-        n_primes (int): Number of primes to generate.
-        verbose (bool): Whether to print progress.
-        progress_every (int): Print progress every N primes if verbose is enabled.
-    """
+
+class McCracknsPrimeLaw:
 
     def __init__(self, *, n_primes: int = 100, verbose: bool = False,
                  progress_every: int = 1000):
-        # User configuration
+
         self.n_primes       = max(2, n_primes)
         self.verbose        = verbose
         self.progress_every = max(1, progress_every)
 
-        # Seed primes and motifs
+        # Seed primes
         seed_primes = [2, 3, 5, 7, 11, 13]
-        self.primes = seed_primes[:self.n_primes]
         seed_gaps   = [1, 2, 2, 4, 2]
         seed_labels = ["U1", "E1.0", "E1.0", "E1.1", "E1.0"]
 
+        self.primes = seed_primes[:self.n_primes]
         self.gaps   = seed_gaps[:len(self.primes) - 1]
-        self.motifs = [("U1", 1)]  # (motif_label, run_count)
-        self._run_counter = {"U1": 1, "E1.0": 0, "E1.1": 0}
+
+        self.motifs = []
+        self._run_counter = {}
         for lbl in seed_labels[:len(self.primes) - 1]:
             run = self._run_counter.get(lbl, 0) + 1
             self._run_counter[lbl] = run
             self.motifs.append((lbl, run))
 
-        self.domains        = NumbersDomains()
-        self.regime_idx     = 1
-        self.primorial      = 2 * 3
-        self.alphabet       = ["U1", "E1.0"]  # active motif set
+        self.domains    = NumbersDomains()
+        self.regime_idx = 1
+        self.primorial  = 2 * 3
+
+        # IMPORTANT: U1 is seed-only and must NOT be in runtime alphabet
+        self.alphabet = ["E1.0"]
         self._sort_alpha()
-        self.used_motifs    = set(self.alphabet)
-        self.regime_points  = []
+
+        self.used_motifs   = set(self.alphabet)
+        self.regime_points = []
 
         if len(self.primes) >= 6:
-            self._bump_regime()  # expand alphabet
+            self._bump_regime()
 
     @staticmethod
     def _gap(label: str) -> int:
-        """
-        Decode a motif label into its numeric gap.
-
-        Example:
-            "E1.0" → 2
-            "E2.0" → 6
-        """
         if label == "U1":
             return 1
         k, x = map(int, label[1:].split("."))
         if k == 1:
-            return 1 << (x + 1)  # 2^(x+1)
+            return 1 << (x + 1)
         return (1 << (k - 1)) * (2 * x + 3)
 
     def _sort_alpha(self):
-        """Sort the current alphabet based on motif gap and label specificity."""
         self.alphabet.sort(
-            key=lambda lbl: (self._gap(lbl),) + tuple(map(int, lbl[1:].split(".")))
+            key=lambda lbl: (self._gap(lbl),)
+            if lbl == "U1"
+            else (self._gap(lbl),) + tuple(map(int, lbl[1:].split(".")))
         )
 
     def _next_motif(self) -> str:
-        """
-        Compute the next unused motif by scanning upward in gap size.
-        """
         g = self._gap(self.alphabet[-1]) + 2
         while True:
             lbl = self.domains.canonical_motif(g)
@@ -95,10 +74,6 @@ class McCracknsPrimeLaw:
             g += 2
 
     def _bump_regime(self):
-        """
-        Expand regime by adding a new motif to the alphabet.
-        Update regime index, primorial, and ensure alignment with sequence length.
-        """
         self.regime_points.append(len(self.primes))
         self.alphabet.append(self._next_motif())
         self._sort_alpha()
@@ -110,11 +85,15 @@ class McCracknsPrimeLaw:
         self.used_motifs.clear()
 
     def _record(self, cand: int, gap: int, label: str):
-        """
-        Finalize candidate as next prime and update all records.
-        """
+        # Enforce invariants
+        if gap == 1 and cand != 3:
+            raise AssertionError(f"gap=1 leaked after seed at candidate {cand}")
+        if self.primes[-1] >= 3 and gap % 2 != 0:
+            raise AssertionError(f"post-seed gap must be even, got {gap}")
+
         self.primes.append(cand)
         self.gaps.append(gap)
+
         run = self._run_counter.get(label, 0) + 1
         self._run_counter[label] = run
         self.motifs.append((label, run))
@@ -124,10 +103,7 @@ class McCracknsPrimeLaw:
             self._bump_regime()
 
     def _single_step(self, *, internal: bool = False):
-        """
-        Attempt to generate the next prime candidate via motifs.
-        If no valid candidate is found, extend alphabet (motif innovation).
-        """
+
         if len(self.primes) < 6:
             return
 
@@ -137,45 +113,41 @@ class McCracknsPrimeLaw:
 
             for lbl in self.alphabet:
                 gap  = self._gap(lbl)
+
+                # Hard guard: U1 must never reappear
+                if gap == 1 or lbl == "U1":
+                    raise AssertionError("U1/gap=1 is seed-only and cannot appear in runtime")
+
+                if p_curr >= 3 and gap % 2 != 0:
+                    raise AssertionError(f"post-seed gap must be even, got {gap}")
+
                 cand = p_curr + gap
 
                 if gcd(cand, P) != 1:
-                    continue  # eliminate mod-primorial composites
+                    continue
 
                 while cand >= self.primes[self.regime_idx] ** 2:
                     self._bump_regime()
                     P = self.primorial
                     if gcd(cand, P) != 1:
-                        break  # candidate now disqualified
+                        break
                 else:
                     self._record(cand, gap, lbl)
 
                     if self.verbose and not internal and \
                        len(self.primes) % self.progress_every == 0:
                         print(f"[prime {len(self.primes):>9}] {cand}")
-                    return  # candidate accepted
+                    return
 
-            # no candidate matched, extend motif alphabet
             self.alphabet.append(self._next_motif())
             self._sort_alpha()
 
     def generate(self):
-        """
-        Generate all primes up to `n_primes` limit.
-        Returns:
-            List[int]: list of primes.
-        """
         while len(self.primes) < self.n_primes:
             self._single_step()
         return self.primes
 
     def generate_one(self):
-        """
-        Advance by exactly one prime.
-
-        Returns:
-            Tuple[int, int, int, str]: (index, prime, gap, motif label)
-        """
         if len(self.primes) < self.n_primes:
             self._single_step()
         idx   = len(self.primes)
@@ -185,12 +157,6 @@ class McCracknsPrimeLaw:
         return idx, p, gap, motif
 
     def stream_primes(self, *, start_idx=1):
-        """
-        Generator that yields primes and their metadata from a given index.
-
-        Yields:
-            Tuple[int, int, int, str]: (index, prime, gap, motif label)
-        """
         while len(self.primes) < self.n_primes:
             self._single_step()
             idx = len(self.primes)
@@ -201,13 +167,10 @@ class McCracknsPrimeLaw:
                 yield idx, p, gap, motif
 
     def get_primes(self):
-        """Returns: list of generated primes."""
         return self.primes.copy()
 
     def get_gaps(self):
-        """Returns: list of prime gaps."""
         return self.gaps.copy()
 
     def get_motifs(self):
-        """Returns: list of motifs (excluding seed)."""
-        return self.motifs[1:].copy()
+        return self.motifs.copy()
