@@ -1,19 +1,14 @@
 """
-Verified regression test for McCrackn's Prime Law (MPL).
+Extended Verified Regression & Structural Validation Suite for MPL
 
-Purpose
--------
-1. Generate first N primes using MPL (assert-only GCD mode).
-2. Generate first N primes using independent reference implementation
-   (classical deterministic trial division).
-3. Compare sequences element-wise.
-4. Abort immediately on first mismatch.
-
-This ensures MPL is not accidentally relying on structural filtering
-or hidden primality assumptions.
+This suite now:
+1. Verifies MPL against independent reference generator (10,000 primes)
+2. Measures performance
+3. Confirms structural invariants
 """
 
 from math import isqrt
+import time
 from mccrackns_prime_law import McCracknsPrimeLaw
 
 
@@ -37,28 +32,29 @@ def reference_primes(n: int):
     return primes
 
 
-def test_regression_first_1000():
-    N = 1000
+def test_regression_first_10000():
+    N = 10000
 
+    start_mpl = time.perf_counter()
     mpl = McCracknsPrimeLaw(n_primes=N)
     mpl_primes = mpl.generate()
+    mpl_time = time.perf_counter() - start_mpl
 
+    start_ref = time.perf_counter()
     ref_primes = reference_primes(N)
+    ref_time = time.perf_counter() - start_ref
 
-    assert len(mpl_primes) == len(ref_primes)
+    assert mpl_primes == ref_primes, "Full 10k regression mismatch"
 
-    for i, (a, b) in enumerate(zip(mpl_primes, ref_primes), start=1):
-        assert a == b, (
-            f"Mismatch at index {i}: MPL={a}, REF={b}"
-        )
+    print("\n--- Performance Report ---")
+    print(f"MPL time: {mpl_time:.4f} seconds")
+    print(f"Reference time: {ref_time:.4f} seconds")
+    print(f"Speed ratio (MPL / REF): {mpl_time/ref_time:.4f}")
 
+    # Structural invariant check: only one odd gap (2→3)
+    gaps = [b - a for a, b in zip(mpl_primes, mpl_primes[1:])]
+    odd_gaps = [g for g in gaps if g % 2 != 0]
 
-def test_regression_first_5000():
-    N = 5000
+    assert odd_gaps == [1], "Unexpected odd gap detected"
 
-    mpl = McCracknsPrimeLaw(n_primes=N)
-    mpl_primes = mpl.generate()
-
-    ref_primes = reference_primes(N)
-
-    assert mpl_primes == ref_primes
+    print("Structural validation passed: Only one odd gap (2→3).")
