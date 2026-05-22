@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Streaming, resumable compute of McCrackn’s motif table (fast residue-based).
+Streaming export of the bounded McCrackn's motif prefix.
 
 Usage:
-    python compute_motifs.py --n 5000000 --csv motifs_5m.csv --state state.json
+    python compute_motifs.py --n 300 --csv motifs_prefix.csv --state state.json
 
 This script generates a CSV file of primes and their associated motifs using
-McCrackn’s Prime Law. It supports resumable operation by saving state
-to a JSON file. Ideal for long computations that may need to be restarted.
+the repository's bounded MPL runtime. It supports resumable operation by saving
+state to a JSON file. It does not extend the runtime beyond the finite motif
+prefix exposed by mccrackns_prime_law.py.
 """
 
 import argparse
@@ -78,6 +79,11 @@ def main() -> None:
     args = ap.parse_args()
 
     N, csv_path, state_path = args.n, args.csv, args.state
+    if N > McCracknsPrimeLaw.max_supported_primes():
+        raise SystemExit(
+            f"requested {N} primes, but the bounded MPL runtime supports "
+            f"{McCracknsPrimeLaw.max_supported_primes()}"
+        )
 
     # Load previous progress if files exist
     done, saved = load_progress(csv_path, state_path)

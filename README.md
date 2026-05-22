@@ -2,20 +2,31 @@
 [![CI](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml/badge.svg)](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15696112.svg)](https://doi.org/10.5281/zenodo.15696112)
 
-_Repository slug:_ `mccrackns_prime_law`  
+_Repository slug:_ `MPL-TC`  
 **Status:** non‑profit · community‑maintained · volunteer‑run
 
 ---
 
 ## Abstract
-**McCrackn’s Prime Law** is a deterministic, recursive rule that derives every prime directly from its predecessor—no sieves, randomness, or empirical tables required.  
-The method is accompanied by mathematical proofs and validation up to \(n = 10^7\).
+**McCrackn’s Prime Law** is a deterministic regime/motif successor architecture for the prime stream.  
+**Triadic Completeness** is the separate Unity / Even / Odd domain layer that recursively covers positive integers once the prime axes are realized.
 
-📄 **Read the full manuscript on Zenodo:** [https://doi.org/10.5281/zenodo.15696112](https://doi.org/10.5281/zenodo.15696112)  
+📄 **Read the full manuscript on Zenodo:** [https://doi.org/10.5281/zenodo.19131458](https://doi.org/10.5281/zenodo.19131458)  
 ✉️ **Contact:** [thenothingnesseffect@gmail.com](mailto:thenothingnesseffect@gmail.com)  
 🧬 **ORCID:** [0009-0001-4400-0171](https://orcid.org/0009-0001-4400-0171)
 
 *Or view the local version:* [`McCrackns_prime_law.pdf`](./McCrackns_prime_law.pdf)
+
+---
+
+## MPL/TC V2 Architecture
+
+The repository keeps the paper's layers separate:
+
+- `mccrackns_prime_law.py` records a bounded executable MPL prefix with explicit motif/regime transitions. `U1` is seed-only for `2 -> 3`; every later gap is even. The bounded tape is an implementation artifact, not the full unbounded MPL theory.
+- `triadic_domains.py` models finite-prefix TC placement: `U1`, dyadic `E` faces, `O1` for the prime/free odd axis, and lpf-based `O2`, `O3`, `O4`, ... composite strata.
+- The Axis Law / First-Hole bridge is represented as finite executable validation in the TC layer and tests, not as the MPL runtime.
+- GCD is not used by the MPL generator. If added in future diagnostics, it must remain a post-hoc sentinel or contradiction guard only.
 
 ---
 
@@ -55,8 +66,8 @@ The method is accompanied by mathematical proofs and validation up to \(n = 10^7
 
 ```bash
 # 1 · Clone & enter
-git clone https://github.com/pt2710/McCrackns-Prime-Law.git
-cd McCrackns-Prime-Law
+git clone https://github.com/pt2710/MPL-TC.git
+cd MPL-TC
 
 # 2 · Ensure Git LFS is enabled (one‑time per machine)
 git lfs install
@@ -69,7 +80,7 @@ source .venv/bin/activate        # macOS / Linux
 # 4 · Install runtime deps
 pip install -r requirements.txt
 
-# 5 · Verify the theorem for the first 10⁵ primes
+# 5 · Verify the bounded executable prefix
 python test_mccrackns_prime_law.py --plot
 ```
 
@@ -132,6 +143,7 @@ mccrackns_prime_law/
 ├── ruleset.json
 ├── SECURITY.md
 ├── state.json
+├── triadic_domains.py
 └── test_mccrackns_prime_law.py
 ```
 </details>

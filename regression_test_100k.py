@@ -1,9 +1,9 @@
 """
 Regression test for McCracknsPrimeLaw.
 
-This test generates 100,000 candidate values using the current
-wheel-based MPL implementation and compares them against a
-reference prime generator (simple deterministic sieve).
+This diagnostic generates the bounded MPL runtime prefix and compares it
+against an independent reference list. The reference path is validation-only;
+it is not part of the MPL mechanism.
 
 It reports:
 - First mismatch index
@@ -38,7 +38,7 @@ def reference_primes(n):
 
 
 if __name__ == "__main__":
-    N = 100_000
+    N = McCracknsPrimeLaw.max_supported_primes()
 
     print(f"Generating {N} MPL candidates...")
     t0 = time.time()

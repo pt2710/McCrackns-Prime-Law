@@ -14,13 +14,10 @@ This script includes:
     * Alphabet size growth
 
 Expected output is saved under `mccrackns_prime_law/figures/`.
+The current executable runtime is a bounded motif prefix.
 """
 
 import os, time, gc
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-import pandas as pd
 
 import mccrackns_prime_law
 from mccrackns_prime_law import McCracknsPrimeLaw
@@ -40,7 +37,7 @@ REFERENCE_PRIMES = [
 ]
 
 def first_n_primes(n: int) -> list[int]:
-    """Returns the first `n` primes via trial division (reference implementation)."""
+    """Return the first `n` primes through a reference-only divisor check."""
     if n <= 20:
         return REFERENCE_PRIMES[:n]
     out = REFERENCE_PRIMES[:]
@@ -139,6 +136,9 @@ def test_error_handling():
 
 def plot_gap_evolution(df, regime_points, outdir):
     """Scatterplot of gaps vs index, color-coded by domain, with vertical regime markers."""
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
     plt.figure(figsize=(12, 6))
     ax = plt.gca()
     sns.scatterplot(data=df, x="index", y="gap", hue="domain",
@@ -154,6 +154,9 @@ def plot_gap_evolution(df, regime_points, outdir):
 
 def plot_gap_vs_run(df, outdir):
     """Plot gap size as function of motif run count."""
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
     plt.figure(figsize=(10, 6))
     sns.scatterplot(data=df, x="run", y="gap", hue="domain",
                     palette="tab10", s=15, alpha=0.7)
@@ -166,6 +169,9 @@ def plot_gap_vs_run(df, outdir):
 
 def plot_cumulative_motifs(df, outdir):
     """Line plot showing cumulative motif count per domain."""
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
     cum = (df.groupby(["domain", "index"], observed=False)
              .size()
              .groupby(level=0, observed=False)
@@ -182,6 +188,9 @@ def plot_cumulative_motifs(df, outdir):
 
 def plot_gap_boxplot(df, outdir):
     """Boxplot of gap distributions by motif domain."""
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
     plt.figure(figsize=(10, 6))
     order = df["domain"].value_counts().index
     sns.boxplot(data=df, x="domain", y="gap", order=order)
@@ -193,6 +202,10 @@ def plot_gap_boxplot(df, outdir):
 
 def plot_innovations_by_regime(df, regime_points, outdir):
     """Barplot of motif innovations introduced at each regime point."""
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
     new_by_regime, seen = [], set()
     prev = 1
     for rp in sorted(regime_points):
@@ -217,6 +230,10 @@ def plot_innovations_by_regime(df, regime_points, outdir):
 
 def plot_alphabet_growth(df, regime_points, outdir):
     """Plot the growth of the alphabet size at each regime point."""
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
     first_idx = df.groupby("motif", observed=False)["index"].min()
     sizes = [{"regime": rp, "alphabet_size": int((first_idx <= rp).sum())}
              for rp in regime_points]
@@ -236,6 +253,9 @@ def plot_alphabet_growth(df, regime_points, outdir):
 
 def main_gap_and_motif_analysis(n: int = 10000):
     """Full analysis and visualization pipeline on the first n primes."""
+    import numpy as np
+    import pandas as pd
+
     print("=" * 50)
     print(f"MAIN ANALYSIS: generating n={n} primes …")
     t0_all = time.perf_counter()
@@ -290,8 +310,9 @@ def main_gap_and_motif_analysis(n: int = 10000):
 # ──────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    test_first_n_primes(n=10000)
+    prefix_n = McCracknsPrimeLaw.max_supported_primes()
+    test_first_n_primes(n=prefix_n)
     test_innovation_points()
     test_no_duplicate_motifs()
     test_error_handling()
-    main_gap_and_motif_analysis(n=10_000_000)
+    main_gap_and_motif_analysis(n=prefix_n)

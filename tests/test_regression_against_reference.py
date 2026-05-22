@@ -2,7 +2,7 @@
 Extended Verified Regression & Structural Validation Suite for MPL
 
 This suite now:
-1. Verifies MPL against independent reference generator (10,000 primes)
+1. Verifies the bounded MPL runtime against an independent reference prefix
 2. Measures performance
 3. Confirms structural invariants
 """
@@ -32,8 +32,8 @@ def reference_primes(n: int):
     return primes
 
 
-def test_regression_first_10000():
-    N = 10000
+def test_regression_bounded_finite_prefix():
+    N = McCracknsPrimeLaw.max_supported_primes()
 
     start_mpl = time.perf_counter()
     mpl = McCracknsPrimeLaw(n_primes=N)
@@ -44,7 +44,7 @@ def test_regression_first_10000():
     ref_primes = reference_primes(N)
     ref_time = time.perf_counter() - start_ref
 
-    assert mpl_primes == ref_primes, "Full 10k regression mismatch"
+    assert mpl_primes == ref_primes, "Bounded MPL prefix regression mismatch"
 
     print("\n--- Performance Report ---")
     print(f"MPL time: {mpl_time:.4f} seconds")
