@@ -1,59 +1,55 @@
 """
-McCrackn's Prime Law — deterministic motif-regime prime generator.
+McCrackn’s Prime Law — Deterministic, recursive prime generator based on motif algebra.
 
-Current implementation note
----------------------------
-This implementation encodes the verified early MPL v1 minimal-recursion tape.
-U1 is seed-only (2 -> 3). After 3, all gaps are even.
+Seed invariant:
+- U1 (gap = 1) occurs exactly once for 2 -> 3.
+- All subsequent prime gaps are even.
 
-The early post-seed schedule from 11 is:
-E1.0 -> E1.1 -> E1.0 -> E1.1 -> E2.0 -> E1.0 -> E2.0 -> E1.0
-
-This fixes the prior bug where the runtime treated motif use as a simple set,
-which incorrectly selected E1.1 at 31 and generated the covered candidate 35.
+Candidate coprimality is handled as deterministic motif-state advancement:
+primorial-covered motif candidates are marked exhausted in the active regime
+rather than emitted. This prevents U1 leakage and prevents repeated motifs from
+being reconsidered after their regime-local use.
 """
 from math import gcd
 from numbers_domains import NumbersDomains
 
 
 class McCracknsPrimeLaw:
-    EARLY_MINIMAL_SCHEDULE = [
-        "E1.1",  # 13 -> 17
-        "E1.0",  # 17 -> 19
-        "E1.1",  # 19 -> 23
-        "E2.0",  # 23 -> 29
-        "E1.0",  # 29 -> 31
-        "E2.0",  # 31 -> 37
-        "E1.1",  # 37 -> 41
-    ]
 
     def __init__(self, *, n_primes: int = 100, verbose: bool = False,
                  progress_every: int = 1000):
-        self.n_primes = max(2, n_primes)
-        self.verbose = verbose
+
+        self.n_primes       = max(2, n_primes)
+        self.verbose        = verbose
         self.progress_every = max(1, progress_every)
 
         seed_primes = [2, 3, 5, 7, 11, 13]
-        seed_gaps = [1, 2, 2, 4, 2]
+        seed_gaps   = [1, 2, 2, 4, 2]
         seed_labels = ["U1", "E1.0", "E1.0", "E1.1", "E1.0"]
 
         self.primes = seed_primes[:self.n_primes]
-        self.gaps = seed_gaps[:len(self.primes) - 1]
+        self.gaps   = seed_gaps[:len(self.primes) - 1]
+
         self.motifs = []
         self._run_counter = {}
-
         for lbl in seed_labels[:len(self.primes) - 1]:
             run = self._run_counter.get(lbl, 0) + 1
             self._run_counter[lbl] = run
             self.motifs.append((lbl, run))
 
-        self.domains = NumbersDomains()
+        self.domains    = NumbersDomains()
         self.regime_idx = 1
-        self.primorial = 2 * 3
-        self.alphabet = ["E1.0", "E1.1", "E2.0"]
+        self.primorial  = 2 * 3
+
+        self.alphabet = ["E1.0"]
         self._sort_alpha()
+
+        self.used_motifs   = set(self.alphabet)
         self.regime_points = []
-        self.schedule_idx = 0
+
+        if len(self.primes) >= 6:
+            self._bump_regime()
+            self.used_motifs = {"E1.0"}
 
     @staticmethod
     def _gap(label: str) -> int:
@@ -79,15 +75,16 @@ class McCracknsPrimeLaw:
                 return lbl
             g += 2
 
-    def _candidate_label(self) -> str:
-        if self.schedule_idx < len(self.EARLY_MINIMAL_SCHEDULE):
-            return self.EARLY_MINIMAL_SCHEDULE[self.schedule_idx]
+    def _bump_regime(self):
+        self.regime_points.append(len(self.primes))
+        self.alphabet.append(self._next_motif())
+        self._sort_alpha()
 
-        # Fallback placeholder: after verified early schedule, use alphabet order.
-        # This is intentionally conservative and will be replaced by the full
-        # general schedule once derived from the MPL v1 recursion.
-        idx = (self.schedule_idx - len(self.EARLY_MINIMAL_SCHEDULE)) % len(self.alphabet)
-        return self.alphabet[idx]
+        self.regime_idx += 1
+        while len(self.primes) <= self.regime_idx:
+            self._single_step(internal=True)
+        self.primorial *= self.primes[self.regime_idx]
+        self.used_motifs.clear()
 
     def _record(self, cand: int, gap: int, label: str):
         if gap == 1 and cand != 3:
@@ -97,32 +94,59 @@ class McCracknsPrimeLaw:
 
         self.primes.append(cand)
         self.gaps.append(gap)
+
         run = self._run_counter.get(label, 0) + 1
         self._run_counter[label] = run
         self.motifs.append((label, run))
-        self.schedule_idx += 1
+        self.used_motifs.add(label)
+
+        if len(self.used_motifs) == len(self.alphabet):
+            self._bump_regime()
 
     def _single_step(self, *, internal: bool = False):
         if len(self.primes) < 6:
             return
 
-        p_curr = self.primes[-1]
-        P = self.primorial
-        lbl = self._candidate_label()
-        gap = self._gap(lbl)
+        while True:
+            p_curr = self.primes[-1]
+            P      = self.primorial
 
-        if gap == 1 or lbl == "U1":
-            raise AssertionError("U1/gap=1 is seed-only and cannot appear in runtime")
-        if p_curr >= 3 and gap % 2 != 0:
-            raise AssertionError(f"post-seed gap must be even, got {gap}")
+            for lbl in self.alphabet:
+                if lbl in self.used_motifs:
+                    continue
 
-        cand = p_curr + gap
-        assert gcd(cand, P) == 1, f"GCD-invariant violated at candidate {cand} (P={P})"
+                gap = self._gap(lbl)
+                if gap == 1 or lbl == "U1":
+                    raise AssertionError("U1/gap=1 is seed-only and cannot appear in runtime")
+                if p_curr >= 3 and gap % 2 != 0:
+                    raise AssertionError(f"post-seed gap must be even, got {gap}")
 
-        self._record(cand, gap, lbl)
+                cand = p_curr + gap
 
-        if self.verbose and not internal and len(self.primes) % self.progress_every == 0:
-            print(f"[prime {len(self.primes):>9}] {cand}")
+                if gcd(cand, P) != 1:
+                    self.used_motifs.add(lbl)
+                    if len(self.used_motifs) == len(self.alphabet):
+                        self._bump_regime()
+                    continue
+
+                while cand >= self.primes[self.regime_idx] ** 2:
+                    self._bump_regime()
+                    P = self.primorial
+                    if gcd(cand, P) != 1:
+                        self.used_motifs.add(lbl)
+                        if len(self.used_motifs) == len(self.alphabet):
+                            self._bump_regime()
+                        break
+                else:
+                    self._record(cand, gap, lbl)
+
+                    if self.verbose and not internal and \
+                       len(self.primes) % self.progress_every == 0:
+                        print(f"[prime {len(self.primes):>9}] {cand}")
+                    return
+
+            self.alphabet.append(self._next_motif())
+            self._sort_alpha()
 
     def generate(self):
         while len(self.primes) < self.n_primes:
@@ -132,9 +156,9 @@ class McCracknsPrimeLaw:
     def generate_one(self):
         if len(self.primes) < self.n_primes:
             self._single_step()
-        idx = len(self.primes)
-        p = self.primes[-1]
-        gap = 0 if idx == 1 else self.gaps[-1]
+        idx   = len(self.primes)
+        p     = self.primes[-1]
+        gap   = 0 if idx == 1 else self.gaps[-1]
         motif = "U1" if idx == 1 else self.motifs[-1][0]
         return idx, p, gap, motif
 
@@ -143,8 +167,8 @@ class McCracknsPrimeLaw:
             self._single_step()
             idx = len(self.primes)
             if idx >= start_idx:
-                p = self.primes[-1]
-                gap = 0 if idx == 1 else self.gaps[-1]
+                p     = self.primes[-1]
+                gap   = 0 if idx == 1 else self.gaps[-1]
                 motif = "U1" if idx == 1 else self.motifs[-1][0]
                 yield idx, p, gap, motif
 
