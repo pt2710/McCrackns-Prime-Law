@@ -23,9 +23,9 @@ _Repository slug:_ `MPL-TC`
 
 The repository keeps the paper's layers separate:
 
-- `mccrackns_prime_law.py` records a deterministic MPL successor with motif/regime accounting. `U1` is seed-only for `2 -> 3`; every later gap is even.
+- `mccrackns_prime_law.py` records a bounded executable MPL prefix with explicit motif/regime transitions. `U1` is seed-only for `2 -> 3`; every later gap is even. The bounded tape is an implementation artifact, not the full unbounded MPL theory.
 - `triadic_domains.py` models finite-prefix TC placement: `U1`, dyadic `E` faces, `O1` for the prime/free odd axis, and lpf-based `O2`, `O3`, `O4`, ... composite strata.
-- The Axis Law / First-Hole bridge is represented as finite executable validation in the TC layer and tests, not as a replacement theory for MPL.
+- The Axis Law / First-Hole bridge is represented as finite executable validation in the TC layer and tests, not as the MPL runtime.
 - GCD is not used by the MPL generator. If added in future diagnostics, it must remain a post-hoc sentinel or contradiction guard only.
 
 ---
@@ -80,7 +80,7 @@ source .venv/bin/activate        # macOS / Linux
 # 4 · Install runtime deps
 pip install -r requirements.txt
 
-# 5 · Verify the theorem for the first 10⁵ primes
+# 5 · Verify the bounded executable prefix
 python test_mccrackns_prime_law.py --plot
 ```
 

@@ -14,6 +14,7 @@ This script includes:
     * Alphabet size growth
 
 Expected output is saved under `mccrackns_prime_law/figures/`.
+The current executable runtime is a bounded motif prefix.
 """
 
 import os, time, gc
@@ -309,8 +310,9 @@ def main_gap_and_motif_analysis(n: int = 10000):
 # ──────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    test_first_n_primes(n=10000)
+    prefix_n = McCracknsPrimeLaw.max_supported_primes()
+    test_first_n_primes(n=prefix_n)
     test_innovation_points()
     test_no_duplicate_motifs()
     test_error_handling()
-    main_gap_and_motif_analysis(n=10_000_000)
+    main_gap_and_motif_analysis(n=prefix_n)

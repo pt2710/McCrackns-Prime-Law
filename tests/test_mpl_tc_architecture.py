@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from mccrackns_prime_law import McCracknsPrimeLaw
 
 
@@ -25,6 +27,11 @@ def test_mpl_file_is_not_wheel_or_fixed_early_schedule():
     lowered = source.lower()
 
     forbidden_markers = [
+        "axiseventscheduler",
+        "events.pop",
+        "_reschedule",
+        "event table",
+        "first-hole",
         "wheel(30)",
         "wheel_30",
         "hardcoded early schedule",
@@ -41,8 +48,40 @@ def test_mpl_file_is_not_wheel_or_fixed_early_schedule():
         assert marker not in lowered
 
 
+def test_mpl_runtime_uses_regime_motif_scheduler_not_axis_events():
+    source = (ROOT / "mccrackns_prime_law.py").read_text(encoding="utf-8")
+
+    assert "class RegimeMotifScheduler" in source
+    assert "AxisEventScheduler" not in source
+    assert "frontier" not in source
+
+
 def test_gcd_is_not_active_in_mpl_generator():
     source = (ROOT / "mccrackns_prime_law.py").read_text(encoding="utf-8").lower()
 
     assert "from math import gcd" not in source
     assert "gcd(" not in source
+
+
+def test_stream_primes_yields_seed_when_starting_at_one():
+    rows = list(McCracknsPrimeLaw(n_primes=4).stream_primes(start_idx=1))
+
+    assert rows == [
+        (1, 2, 0, "U1"),
+        (2, 3, 1, "U1"),
+        (3, 5, 2, "E1.0"),
+        (4, 7, 2, "E1.0"),
+    ]
+
+
+def test_stream_primes_start_idx_two_starts_at_second_prime():
+    rows = list(McCracknsPrimeLaw(n_primes=4).stream_primes(start_idx=2))
+
+    assert rows[0] == (2, 3, 1, "U1")
+
+
+def test_bounded_runtime_reports_prefix_exhaustion():
+    law = McCracknsPrimeLaw(n_primes=McCracknsPrimeLaw.max_supported_primes() + 1)
+
+    with pytest.raises(RuntimeError, match="finite MPL motif tape exhausted"):
+        law.generate()
