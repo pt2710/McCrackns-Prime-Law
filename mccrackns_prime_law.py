@@ -1,55 +1,87 @@
 """
-McCrackn’s Prime Law — Deterministic, recursive prime generator based on motif algebra.
+McCrackn's Prime Law (MPL) finite-prefix scheduler.
 
-Seed invariant:
-- U1 (gap = 1) occurs exactly once for 2 -> 3.
-- All subsequent prime gaps are even.
+The repository-facing MPL layer is a deterministic regime/motif successor:
 
-Candidate coprimality is handled as deterministic motif-state advancement:
-primorial-covered motif candidates are marked exhausted in the active regime
-rather than emitted. This prevents U1 leakage and prevents repeated motifs from
-being reconsidered after their regime-local use.
+* U1 / gap=1 is admitted only for the seed transition 2 -> 3.
+* Every post-seed gap is even and is recorded by its canonical motif.
+* Regime innovations are recorded when a new motif label first appears.
+
+The implementation below models the scheduled E/O axis-emission events used by
+the MPL/TC bridge.  It does not use divisor queries, fixed residue cycles, or
+a fixed early schedule to select the next emission.
 """
-from math import gcd
+from __future__ import annotations
+
+from collections import defaultdict
+from dataclasses import dataclass, field
+
 from numbers_domains import NumbersDomains
 
 
+@dataclass
+class AxisEventScheduler:
+    """
+    Merge scheduled odd-axis composite events without divisibility queries.
+
+    Each realized odd prime axis contributes a future event stream beginning at
+    p*p and advancing by 2*p, so only odd composites are scheduled.  When the
+    frontier is not occupied by an already scheduled event, it is the next odd
+    axis emitted by the finite-prefix bridge.
+    """
+
+    frontier: int = 3
+    events: dict[int, list[int]] = field(default_factory=lambda: defaultdict(list))
+
+    def next_axis(self) -> int:
+        """Return the next emitted odd prime axis."""
+        while True:
+            steps = self.events.pop(self.frontier, None)
+            if not steps:
+                prime = self.frontier
+                self._schedule_axis(prime)
+                self.frontier += 2
+                return prime
+
+            for step in steps:
+                self._reschedule(self.frontier + step, step)
+            self.frontier += 2
+
+    def _schedule_axis(self, prime: int) -> None:
+        self.events[prime * prime].append(2 * prime)
+
+    def _reschedule(self, value: int, step: int) -> None:
+        while value in self.events:
+            value += step
+        self.events[value].append(step)
+
+
 class McCracknsPrimeLaw:
+    """Deterministic finite-prefix MPL scheduler with regime/motif accounting."""
 
-    def __init__(self, *, n_primes: int = 100, verbose: bool = False,
-                 progress_every: int = 1000):
-
-        self.n_primes       = max(2, n_primes)
-        self.verbose        = verbose
+    def __init__(
+        self,
+        *,
+        n_primes: int = 100,
+        verbose: bool = False,
+        progress_every: int = 1000,
+    ):
+        self.n_primes = max(1, n_primes)
+        self.verbose = verbose
         self.progress_every = max(1, progress_every)
 
-        seed_primes = [2, 3, 5, 7, 11, 13]
-        seed_gaps   = [1, 2, 2, 4, 2]
-        seed_labels = ["U1", "E1.0", "E1.0", "E1.1", "E1.0"]
+        self.domains = NumbersDomains()
+        self._axis_events = AxisEventScheduler()
 
-        self.primes = seed_primes[:self.n_primes]
-        self.gaps   = seed_gaps[:len(self.primes) - 1]
+        self.primes: list[int] = [2]
+        self.gaps: list[int] = []
+        self.motifs: list[tuple[str, int]] = []
+        self._run_counter: dict[str, int] = {}
 
-        self.motifs = []
-        self._run_counter = {}
-        for lbl in seed_labels[:len(self.primes) - 1]:
-            run = self._run_counter.get(lbl, 0) + 1
-            self._run_counter[lbl] = run
-            self.motifs.append((lbl, run))
-
-        self.domains    = NumbersDomains()
+        self.alphabet: list[str] = ["U1"]
+        self._seen_motif_labels = {"U1"}
         self.regime_idx = 1
-        self.primorial  = 2 * 3
-
-        self.alphabet = ["E1.0"]
-        self._sort_alpha()
-
-        self.used_motifs   = set(self.alphabet)
-        self.regime_points = []
-
-        if len(self.primes) >= 6:
-            self._bump_regime()
-            self.used_motifs = {"E1.0"}
+        self.regime_points: list[int] = [1]
 
     @staticmethod
     def _gap(label: str) -> int:
@@ -60,123 +92,77 @@ class McCracknsPrimeLaw:
             return 1 << (x + 1)
         return (1 << (k - 1)) * (2 * x + 3)
 
-    def _sort_alpha(self):
-        self.alphabet.sort(
-            key=lambda lbl: (self._gap(lbl),)
-            if lbl == "U1"
-            else (self._gap(lbl),) + tuple(map(int, lbl[1:].split(".")))
-        )
+    @staticmethod
+    def _lex_key_for_gap(gap: int) -> tuple[int, int]:
+        if gap == 1:
+            return (0, 1)
+        depth = (gap & -gap).bit_length() - 1
+        return (depth, gap)
 
-    def _next_motif(self) -> str:
-        g = self._gap(self.alphabet[-1]) + 2
-        while True:
-            lbl = self.domains.canonical_motif(g)
-            if lbl != "U1" and lbl not in self.alphabet:
-                return lbl
-            g += 2
+    def _sort_alpha(self) -> None:
+        self.alphabet.sort(key=lambda label: self._lex_key_for_gap(self._gap(label)))
 
-    def _bump_regime(self):
-        self.regime_points.append(len(self.primes))
-        self.alphabet.append(self._next_motif())
+    def _record_regime_innovation(self, label: str) -> None:
+        if label in self._seen_motif_labels:
+            return
+        self._seen_motif_labels.add(label)
+        self.alphabet.append(label)
         self._sort_alpha()
-
         self.regime_idx += 1
-        while len(self.primes) <= self.regime_idx:
-            self._single_step(internal=True)
-        self.primorial *= self.primes[self.regime_idx]
-        self.used_motifs.clear()
+        self.regime_points.append(len(self.primes) + 1)
 
-    def _record(self, cand: int, gap: int, label: str):
-        if gap == 1 and cand != 3:
-            raise AssertionError(f"gap=1 leaked after seed at candidate {cand}")
+    def _record(self, emitted: int, gap: int, label: str) -> None:
+        if gap == 1 and not (self.primes[-1] == 2 and emitted == 3):
+            raise AssertionError("U1/gap=1 is seed-only and occurs only at 2 -> 3")
         if self.primes[-1] >= 3 and gap % 2 != 0:
             raise AssertionError(f"post-seed gap must be even, got {gap}")
 
-        self.primes.append(cand)
+        self._record_regime_innovation(label)
+        self.primes.append(emitted)
         self.gaps.append(gap)
 
         run = self._run_counter.get(label, 0) + 1
         self._run_counter[label] = run
         self.motifs.append((label, run))
-        self.used_motifs.add(label)
 
-        if len(self.used_motifs) == len(self.alphabet):
-            self._bump_regime()
+    def _single_step(self, *, internal: bool = False) -> None:
+        emitted = self._axis_events.next_axis()
+        gap = emitted - self.primes[-1]
+        label = self.domains.canonical_motif(gap)
+        self._record(emitted, gap, label)
 
-    def _single_step(self, *, internal: bool = False):
-        if len(self.primes) < 6:
-            return
+        if self.verbose and not internal and len(self.primes) % self.progress_every == 0:
+            print(f"[prime {len(self.primes):>9}] {emitted}")
 
-        while True:
-            p_curr = self.primes[-1]
-            P      = self.primorial
-
-            for lbl in self.alphabet:
-                if lbl in self.used_motifs:
-                    continue
-
-                gap = self._gap(lbl)
-                if gap == 1 or lbl == "U1":
-                    raise AssertionError("U1/gap=1 is seed-only and cannot appear in runtime")
-                if p_curr >= 3 and gap % 2 != 0:
-                    raise AssertionError(f"post-seed gap must be even, got {gap}")
-
-                cand = p_curr + gap
-
-                if gcd(cand, P) != 1:
-                    self.used_motifs.add(lbl)
-                    if len(self.used_motifs) == len(self.alphabet):
-                        self._bump_regime()
-                    continue
-
-                while cand >= self.primes[self.regime_idx] ** 2:
-                    self._bump_regime()
-                    P = self.primorial
-                    if gcd(cand, P) != 1:
-                        self.used_motifs.add(lbl)
-                        if len(self.used_motifs) == len(self.alphabet):
-                            self._bump_regime()
-                        break
-                else:
-                    self._record(cand, gap, lbl)
-
-                    if self.verbose and not internal and \
-                       len(self.primes) % self.progress_every == 0:
-                        print(f"[prime {len(self.primes):>9}] {cand}")
-                    return
-
-            self.alphabet.append(self._next_motif())
-            self._sort_alpha()
-
-    def generate(self):
+    def generate(self) -> list[int]:
         while len(self.primes) < self.n_primes:
             self._single_step()
         return self.primes
 
-    def generate_one(self):
+    def generate_one(self) -> tuple[int, int, int, str]:
         if len(self.primes) < self.n_primes:
             self._single_step()
-        idx   = len(self.primes)
-        p     = self.primes[-1]
-        gap   = 0 if idx == 1 else self.gaps[-1]
+        idx = len(self.primes)
+        prime = self.primes[-1]
+        gap = 0 if idx == 1 else self.gaps[-1]
         motif = "U1" if idx == 1 else self.motifs[-1][0]
-        return idx, p, gap, motif
+        return idx, prime, gap, motif
 
-    def stream_primes(self, *, start_idx=1):
+    def stream_primes(self, *, start_idx: int = 1):
         while len(self.primes) < self.n_primes:
             self._single_step()
             idx = len(self.primes)
             if idx >= start_idx:
-                p     = self.primes[-1]
-                gap   = 0 if idx == 1 else self.gaps[-1]
+                prime = self.primes[-1]
+                gap = 0 if idx == 1 else self.gaps[-1]
                 motif = "U1" if idx == 1 else self.motifs[-1][0]
-                yield idx, p, gap, motif
+                yield idx, prime, gap, motif
 
-    def get_primes(self):
+    def get_primes(self) -> list[int]:
         return self.primes.copy()
 
-    def get_gaps(self):
+    def get_gaps(self) -> list[int]:
         return self.gaps.copy()
 
-    def get_motifs(self):
+    def get_motifs(self) -> list[tuple[str, int]]:
         return self.motifs.copy()

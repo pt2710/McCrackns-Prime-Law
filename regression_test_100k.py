@@ -1,9 +1,9 @@
 """
 Regression test for McCracknsPrimeLaw.
 
-This test generates 100,000 candidate values using the current
-wheel-based MPL implementation and compares them against a
-reference prime generator (simple deterministic sieve).
+This diagnostic generates 100,000 MPL emissions and compares them against an
+independent reference list. The reference path is validation-only; it is not
+part of the MPL mechanism.
 
 It reports:
 - First mismatch index

@@ -1,7 +1,10 @@
-"""Utility functions for prime calculations."""
+"""Reference-only utilities for tests and diagnostics."""
 
 def is_prime(n: int) -> bool:
-    """Return ``True`` if ``n`` is prime using trial division."""
+    """Return ``True`` for primes by direct divisor checks.
+
+    This helper is not used by the MPL successor.
+    """
     if n < 2:
         return False
     if n == 2:
