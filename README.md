@@ -1,6 +1,6 @@
 # McCrackn’s Prime Law
 [![CI](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml/badge.svg)](https://github.com/pt2710/McCrackns-Prime-Law/actions/workflows/ci.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15696112.svg)](https://doi.org/10.5281/zenodo.15696112)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20343409.svg)](https://doi.org/10.5281/zenodo.20343409)
 
 _Repository slug:_ `MPL-TC`  
 **Status:** non‑profit · community‑maintained · volunteer‑run
@@ -11,7 +11,7 @@ _Repository slug:_ `MPL-TC`
 **McCrackn’s Prime Law** is a deterministic regime/motif successor architecture for the prime stream.  
 **Triadic Completeness** is the separate Unity / Even / Odd domain layer that recursively covers positive integers once the prime axes are realized.
 
-📄 **Read the full manuscript on Zenodo:** [https://doi.org/10.5281/zenodo.19131458](https://doi.org/10.5281/zenodo.19131458)  
+📄 **Read the full manuscript on Zenodo:** [https://doi.org/10.5281/zenodo.20343409](https://doi.org/10.5281/zenodo.20343409)
 ✉️ **Contact:** [thenothingnesseffect@gmail.com](mailto:thenothingnesseffect@gmail.com)  
 🧬 **ORCID:** [0009-0001-4400-0171](https://orcid.org/0009-0001-4400-0171)
 
@@ -19,7 +19,7 @@ _Repository slug:_ `MPL-TC`
 
 ---
 
-## MPL/TC V2 Architecture
+## MPL/TC V3 Architecture
 
 The repository keeps the paper's layers separate:
 
@@ -27,6 +27,36 @@ The repository keeps the paper's layers separate:
 - `triadic_domains.py` models finite-prefix TC placement: `U1`, dyadic `E` faces, `O1` for the prime/free odd axis, and lpf-based `O2`, `O3`, `O4`, ... composite strata.
 - The Axis Law / First-Hole bridge is represented as finite executable validation in the TC layer and tests, not as the MPL runtime.
 - GCD is not used by the MPL generator. If added in future diagnostics, it must remain a post-hoc sentinel or contradiction guard only.
+- Implementation-support status is tracked in [`docs/claim_status_matrix.md`](docs/claim_status_matrix.md), [`docs/unbounded_scheduler_proof_obligations.md`](docs/unbounded_scheduler_proof_obligations.md), and [`docs/theorem_implementation_map.md`](docs/theorem_implementation_map.md). The compressed regime/motif O(1) scheduler remains a mathematical claim and proof/implementation target, not a completed repository feature.
+
+## Derivation-Level Unbounded Lagged Certificate-Frontier Scheduler
+
+The repository also includes `lagged_certificate_frontier.py`, an executable
+implementation of the paper's derivation-level unbounded lagged TC
+certificate-frontier scheduler. This scheduler distinguishes generated values
+from derivations, records allowed and forbidden derivations separately, and
+tracks activation cohorts, active multipliers, known targets, delayed
+obstruction horizons, and prime buffers.
+
+The current emitted axis `q_n` is a known target but not an active multiplier
+inside recursion `R_n`. Objects created or certified during `R_n` activate only
+after the recursion closes. The scheduler delays `q_n^2` until the next
+recursion, normalizes composite value certificates by sorted factor words,
+deduplicates aliases such as `3 * 15 = 5 * 9 = 45`, and keeps derivation aliases
+for audit/debugging. In particular, a forbidden derivation does not forbid the
+numeric value when another allowed derivation generates it.
+
+The concrete scheduler uses generated certificate maintenance,
+merge/compare-style marker readout, multiplication of active emitted axes by
+known targets, derivation legality checks from recursion metadata, and canonical
+normalization. It does not use gcd filtering, primality tests, trial division,
+sieve arrays, wheel residues, candidate scanning, hardcoded prime tables,
+hardcoded gap tables, or finite precomputed gap tapes as runtime mechanisms.
+
+Concrete runtime is data-structure-dependent. The finite-prefix regression
+tests are implementation evidence, not mathematical proof. The O(1) claim
+belongs only to the stronger compressed-motif/unit-cost hypothesis unless the
+bounded lagged-closure compression theorem is later supplied.
 
 ---
 
