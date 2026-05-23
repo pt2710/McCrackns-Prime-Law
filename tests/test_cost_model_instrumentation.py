@@ -8,7 +8,7 @@ def test_cost_model_reports_bounded_status_without_proving_o1():
     assert report.proves_o1 is False
     assert report.constant_within_prefix is True
     assert "bounded finite motif tape" in report.limitation
-    assert "v3 o(1) claim" in report.limitation.lower()
+    assert "v3 mpl-normalized symbolic o(1) claim" in report.limitation.lower()
 
 
 def test_cost_model_separates_symbolic_steps_from_bit_complexity():

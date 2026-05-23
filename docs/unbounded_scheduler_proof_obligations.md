@@ -1,16 +1,22 @@
 # Unbounded MPL Scheduler Proof Obligations
 
 The current paper states a derivation-level unbounded lagged TC
-certificate-frontier scheduler and a stronger compressed regime/motif
-successor claim.  The repository now implements the Section 6.5
-derivation-level scheduler.  The older `mccrackns_prime_law.py` runtime remains
-a bounded executable prefix / regression harness.
+certificate-frontier scheduler and then reads MPL as the regime-motif /
+Lex-Min readout of that TC certificate frontier.  The repository now implements
+the derivation-level scheduler through PR #5 on `master`
+(`25421497ec8b4dfd2e33e9b5b135a93d2e6f6368`, from implementation commit
+`09157d77ae26baab8e942a18253ad537f5ac07b4`).  The older
+`mccrackns_prime_law.py` runtime remains a bounded executable prefix /
+regression harness.
 
 This document still tracks the remaining obligations before replacing the
 bounded regime/motif harness with a compressed unbounded motif scheduler or
 claiming the concrete derivation-level frontier representation has O(1)
-runtime.  The lagged certificate-frontier scheduler is implemented separately.
-The bounded lagged-closure compression theorem remains open.
+runtime.  The paper's O(1) claim is scoped to MPL-normalized motif-to-motif
+symbolic transition cost; it is not a claim about bit-complexity, expanded
+integer output, explicit certificate-frontier materialization, whole-regime
+materialization, concrete data-structure runtime, repository tests, or
+finite-prefix implementation evidence.  The bounded lagged-closure compression theorem remains open.
 
 ## Required Obligations Before Replacing The Bounded Runtime
 
@@ -49,9 +55,12 @@ The bounded lagged-closure compression theorem remains open.
    or candidate-rejection mechanism.
 
 8. Cost model:
-   Provide a formal unit-cost model, invariant reasoning for constant or
-   amortized scheduler steps, and a clear separation from arithmetic bit costs,
-   printing costs, Python data-structure overhead, and finite-prefix timing.
+   Preserve the final paper's MPL-normalized motif-to-motif symbolic O(1)
+   scope while providing any additional invariant reasoning needed before a
+   compressed implementation can claim constant or amortized scheduler steps.
+   Keep this separate from arithmetic bit costs, expanded integer output,
+   explicit frontier materialization, whole-regime materialization, Python
+   data-structure overhead, and finite-prefix timing.
 
 9. Validation plan:
    Define finite-prefix tests against independent references and bridge
@@ -64,4 +73,7 @@ The repository should continue to describe `mccrackns_prime_law.py` as a
 bounded executable prefix / regression harness until these obligations are
 discharged by code, tests, and proof artifacts.  The new
 `lagged_certificate_frontier.py` module is the paper-level frontier scheduler,
-with data-structure-dependent concrete cost.
+with deterministic check-free behavior and data-structure-dependent concrete
+cost.  Repository tests are finite-prefix regression guardrails, not proof that
+finite-prefix tests establish asymptotic complexity, concrete O(1), bounded
+lagged-closure compression, or the full theorem complex.

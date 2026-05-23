@@ -8,8 +8,27 @@ _Repository slug:_ `MPL-TC`
 ---
 
 ## Abstract
-**McCrackn’s Prime Law** is a deterministic regime/motif successor architecture for the prime stream.  
-**Triadic Completeness** is the separate Unity / Even / Odd domain layer that recursively covers positive integers once the prime axes are realized.
+This repository accompanies the V3 paper, where **Triadic Completeness (TC)**
+supplies the recursive number-universe architecture and **McCrackn’s Prime
+Law (MPL)** is the regime-motif / Lex-Min readout of the TC certificate
+frontier.
+
+The repository mirrors the paper's layer order:
+
+```text
+TC -> Axis / First-Hole -> derivation-level lagged scheduler
+   -> MPL regime-motif / Lex-Min readout
+   -> MPL-normalized symbolic O(1)
+```
+
+Here, MPL is the regime-motif / Lex-Min readout of the TC certificate
+frontier, not a replacement for the TC layer.
+
+The final O(1) statement is scoped to MPL-normalized motif-to-motif symbolic
+transition cost in the paper's cost model. It is not a claim about bit
+complexity, expanded integer output, explicit certificate-frontier
+materialization, whole-regime materialization, concrete Python data-structure
+runtime, repository tests, or finite-prefix evidence.
 
 📄 **Read the full manuscript on Zenodo:** [https://doi.org/10.5281/zenodo.20343409](https://doi.org/10.5281/zenodo.20343409)
 ✉️ **Contact:** [thenothingnesseffect@gmail.com](mailto:thenothingnesseffect@gmail.com)  
@@ -23,11 +42,12 @@ _Repository slug:_ `MPL-TC`
 
 The repository keeps the paper's layers separate:
 
-- `mccrackns_prime_law.py` records a bounded executable MPL prefix with explicit motif/regime transitions. `U1` is seed-only for `2 -> 3`; every later gap is even. The bounded tape is an implementation artifact, not the full unbounded MPL theory.
 - `triadic_domains.py` models finite-prefix TC placement: `U1`, dyadic `E` faces, `O1` for the prime/free odd axis, and lpf-based `O2`, `O3`, `O4`, ... composite strata.
-- The Axis Law / First-Hole bridge is represented as finite executable validation in the TC layer and tests, not as the MPL runtime.
+- The Axis Law / First-Hole bridge is represented as finite executable validation in the TC layer and tests. First-Hole language is always relative to realized smooth-monoid coverage `M_j = <{2} union P_j>`.
+- `lagged_certificate_frontier.py` implements the derivation-level unbounded lagged TC certificate-frontier scheduler introduced in PR #5, merged at `25421497ec8b4dfd2e33e9b5b135a93d2e6f6368` from implementation commit `09157d77ae26baab8e942a18253ad537f5ac07b4`.
+- MPL is documented as the regime-motif / Lex-Min readout of the TC certificate frontier. The older `mccrackns_prime_law.py` module remains a bounded executable MPL prefix and regression harness with explicit motif/regime transitions. `U1` is seed-only for `2 -> 3`; every later gap is even. The bounded tape is an implementation artifact, not the full compressed symbolic MPL runtime.
 - GCD is not used by the MPL generator. If added in future diagnostics, it must remain a post-hoc sentinel or contradiction guard only.
-- Implementation-support status is tracked in [`docs/claim_status_matrix.md`](docs/claim_status_matrix.md), [`docs/unbounded_scheduler_proof_obligations.md`](docs/unbounded_scheduler_proof_obligations.md), and [`docs/theorem_implementation_map.md`](docs/theorem_implementation_map.md). The compressed regime/motif O(1) scheduler remains a mathematical claim and proof/implementation target, not a completed repository feature.
+- Implementation-support status is tracked in [`docs/claim_status_matrix.md`](docs/claim_status_matrix.md), [`docs/unbounded_scheduler_proof_obligations.md`](docs/unbounded_scheduler_proof_obligations.md), and [`docs/theorem_implementation_map.md`](docs/theorem_implementation_map.md). The concrete scheduler is deterministic and check-free, but its concrete runtime is data-structure-dependent; repository tests provide finite-prefix regression evidence only.
 
 ## Derivation-Level Unbounded Lagged Certificate-Frontier Scheduler
 
@@ -54,9 +74,12 @@ sieve arrays, wheel residues, candidate scanning, hardcoded prime tables,
 hardcoded gap tables, or finite precomputed gap tapes as runtime mechanisms.
 
 Concrete runtime is data-structure-dependent. The finite-prefix regression
-tests are implementation evidence, not mathematical proof. The O(1) claim
-belongs only to the stronger compressed-motif/unit-cost hypothesis unless the
-bounded lagged-closure compression theorem is later supplied.
+tests are implementation evidence, not mathematical proof. The paper's O(1)
+claim belongs only to MPL-normalized motif-to-motif symbolic transition cost.
+The repository does not claim bit-complexity O(1), expanded integer output
+O(1), explicit frontier materialization O(1), concrete data-structure O(1), or
+that finite-prefix tests establish asymptotic complexity or the full theorem
+complex.
 
 ---
 

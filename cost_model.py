@@ -1,10 +1,12 @@
 """
 Operation-count scaffolding for MPL/TC implementation support.
 
-This module does not prove the V3 O(1) theorem.  It records a bounded-prefix
-unit-cost accounting framework for the current finite motif tape runtime and
-keeps arithmetic bit complexity, Python data-structure costs, and the paper's
-unbounded scheduler proof obligations separate.
+This module does not prove the V3 MPL-normalized motif-to-motif symbolic O(1)
+claim.  It records a bounded-prefix unit-cost accounting framework for the
+current finite motif tape runtime and keeps arithmetic bit complexity, expanded
+integer output, explicit frontier materialization, Python data-structure costs,
+and repository finite-prefix evidence separate from the paper's symbolic cost
+model.
 """
 from __future__ import annotations
 
@@ -63,7 +65,7 @@ def audit_bounded_prefix_cost(n_primes: int = 20) -> CostAuditReport:
 
     The count is intentionally conservative and explanatory.  It can show that
     this instrumentation uses a fixed symbolic count on the implemented prefix;
-    it cannot prove the paper's unbounded O(1) theorem.
+    it cannot prove the paper's MPL-normalized symbolic O(1) claim.
     """
     if n_primes < 2:
         raise ValueError("n_primes must be at least 2")
@@ -90,6 +92,8 @@ def audit_bounded_prefix_cost(n_primes: int = 20) -> CostAuditReport:
         limitation=(
             "This audit covers the bounded finite motif tape only. It does not "
             "discharge the formal unbounded scheduler, invariant, amortization, "
-            "or bit-complexity obligations required for the V3 O(1) claim."
+            "bit-complexity, expanded-output, explicit-frontier, concrete "
+            "runtime, or repository-proof obligations excluded from the V3 "
+            "MPL-normalized symbolic O(1) claim."
         ),
     )
