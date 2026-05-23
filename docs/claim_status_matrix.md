@@ -6,10 +6,11 @@ replacement for the paper.  When this document and code disagree, code is the
 source of truth for what is implemented; when repository language and the V3
 paper disagree, the V3 paper is the theory source of truth.
 
-The current repository state is a bounded executable prefix / regression
-harness with finite-prefix TC/Axis validation.  The full unbounded MPL
+The current repository state includes the original bounded executable prefix / regression harness,
+finite-prefix TC/Axis validation, and an executable derivation-level unbounded
+lagged TC certificate-frontier scheduler.  The full compressed MPL
 regime-motif scheduler remains a mathematical claim and an open
-implementation/proof-obligation target.
+implementation/proof-obligation target in the compressed/O(1) sense.
 
 Implementation boundary: full unbounded MPL regime-motif scheduler remains not implemented in this repository.
 
@@ -36,6 +37,7 @@ Implementation boundary: full unbounded MPL regime-motif scheduler remains not i
 | O2/O3/O4 lpf-strata for odd composites | Least-prime-factor placement for realized odd axes | `triadic_domains.py`, `tests/test_triadic_domains.py` | B - finite-prefix validated |
 | Axis Law / First-Hole bridge examples | Finite realized-axis first-hole checks | `triadic_domains.py`, `tests/test_triadic_domains.py` | B - finite-prefix validated |
 | MPL successor equals Axis Law successor for a finite prefix | Dedicated finite bridge verifier compares bounded MPL emissions to first-hole outputs | `verify_axis_bridge.py`, `tests/test_axis_bridge_consistency.py` | B - finite-prefix validated |
+| Derivation-level lagged TC certificate-frontier scheduler | Executable scheduler with generated values, allowed/forbidden derivations, activation cohorts, active multipliers, known targets, delayed obstruction horizons, canonical value certificates, and prime buffers | `lagged_certificate_frontier.py`, `tests/test_lagged_certificate_frontier.py` | C - implemented with finite-prefix regression coverage |
 | Full unbounded MPL regime-motif scheduler | Not implemented. Current runtime is `FINITE_MPL_GAP_TAPE` plus `RegimeMotifScheduler`. | `mccrackns_prime_law.py`, `docs/unbounded_scheduler_proof_obligations.md` | F - proof/implementation obligation |
 | O(1) unit-cost successor claim | Instrumentation records a bounded-prefix operation-count framework only. It does not prove the V3 asymptotic theorem. | `cost_model.py`, `tests/test_cost_model_instrumentation.py` | F - proof obligation |
 | TC iff MPL bridge | Finite-prefix verifier exists; full equivalence remains paper-level unless formal obligations are discharged in code/proofs. | `verify_axis_bridge.py`, `docs/theorem_implementation_map.md` | D/F - paper claim with finite validation |
@@ -67,7 +69,8 @@ Implementation boundary: full unbounded MPL regime-motif scheduler remains not i
 
 The repository may safely claim that it provides a bounded executable
 prefix/regression harness for MPL-facing motif transitions, finite-prefix
-TC/U/E/O placement, finite Axis Law bridge checks, forbidden-mechanism
+TC/U/E/O placement, finite Axis Law bridge checks, an executable
+derivation-level lagged certificate-frontier scheduler, forbidden-mechanism
 regression tests, and implementation-support audit scaffolding.
 
 It may not claim that the full unbounded MPL scheduler or the V3 O(1)

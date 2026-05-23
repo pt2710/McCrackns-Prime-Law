@@ -27,7 +27,36 @@ The repository keeps the paper's layers separate:
 - `triadic_domains.py` models finite-prefix TC placement: `U1`, dyadic `E` faces, `O1` for the prime/free odd axis, and lpf-based `O2`, `O3`, `O4`, ... composite strata.
 - The Axis Law / First-Hole bridge is represented as finite executable validation in the TC layer and tests, not as the MPL runtime.
 - GCD is not used by the MPL generator. If added in future diagnostics, it must remain a post-hoc sentinel or contradiction guard only.
-- Implementation-support status is tracked in [`docs/claim_status_matrix.md`](docs/claim_status_matrix.md), [`docs/unbounded_scheduler_proof_obligations.md`](docs/unbounded_scheduler_proof_obligations.md), and [`docs/theorem_implementation_map.md`](docs/theorem_implementation_map.md). The full unbounded scheduler remains a mathematical claim and proof/implementation target, not a completed repository feature.
+- Implementation-support status is tracked in [`docs/claim_status_matrix.md`](docs/claim_status_matrix.md), [`docs/unbounded_scheduler_proof_obligations.md`](docs/unbounded_scheduler_proof_obligations.md), and [`docs/theorem_implementation_map.md`](docs/theorem_implementation_map.md). The compressed regime/motif O(1) scheduler remains a mathematical claim and proof/implementation target, not a completed repository feature.
+
+## Derivation-Level Unbounded Lagged Certificate-Frontier Scheduler
+
+The repository also includes `lagged_certificate_frontier.py`, an executable
+implementation of the paper's derivation-level unbounded lagged TC
+certificate-frontier scheduler. This scheduler distinguishes generated values
+from derivations, records allowed and forbidden derivations separately, and
+tracks activation cohorts, active multipliers, known targets, delayed
+obstruction horizons, and prime buffers.
+
+The current emitted axis `q_n` is a known target but not an active multiplier
+inside recursion `R_n`. Objects created or certified during `R_n` activate only
+after the recursion closes. The scheduler delays `q_n^2` until the next
+recursion, normalizes composite value certificates by sorted factor words,
+deduplicates aliases such as `3 * 15 = 5 * 9 = 45`, and keeps derivation aliases
+for audit/debugging. In particular, a forbidden derivation does not forbid the
+numeric value when another allowed derivation generates it.
+
+The concrete scheduler uses generated certificate maintenance,
+merge/compare-style marker readout, multiplication of active emitted axes by
+known targets, derivation legality checks from recursion metadata, and canonical
+normalization. It does not use gcd filtering, primality tests, trial division,
+sieve arrays, wheel residues, candidate scanning, hardcoded prime tables,
+hardcoded gap tables, or finite precomputed gap tapes as runtime mechanisms.
+
+Concrete runtime is data-structure-dependent. The finite-prefix regression
+tests are implementation evidence, not mathematical proof. The O(1) claim
+belongs only to the stronger compressed-motif/unit-cost hypothesis unless the
+bounded lagged-closure compression theorem is later supplied.
 
 ---
 

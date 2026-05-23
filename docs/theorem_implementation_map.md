@@ -16,15 +16,19 @@ complex.
 | Theorem 6.6, Axis Law iff MPL outcomes | MPL successor equals `min(N >= 1 \\ M_j)` in proof layer | `verify_axis_bridge.py` | `tests/test_axis_bridge_consistency.py` | finite-prefix validated | Full equivalence remains paper-level |
 | Lemma 6.12, Sentinel non-generativity | GCD/assertions, if present, are falsification-only | Policy in docs; no GCD in runtime | `tests/test_mpl_tc_architecture.py` | implemented as absence/policy | No active GCD selector is present |
 | Bounded MPL regime/motif prefix | Repository emits a finite prefix with motif labels and regime accounting | `mccrackns_prime_law.py` | `tests/test_regression_against_reference.py` | finite-prefix validated | Uses `FINITE_MPL_GAP_TAPE`; not the full theory |
-| Full unbounded MPL scheduler | Deterministic check-free scheduler for all primes | Not implemented | `docs/unbounded_scheduler_proof_obligations.md` | proof obligation | Must not be claimed as implemented |
-| Theorem 6.17, O(1) unit-cost successor | Constant scheduler steps in unit-cost RAM, excluding bit costs | `cost_model.py` framework only | `tests/test_cost_model_instrumentation.py` | proof obligation | Instrumentation cannot prove the asymptotic theorem |
+| Section 6.5, Derivation-level lagged TC certificate-frontier scheduler | Deterministic derivation scheduler with generated values, allowed/forbidden derivations, activation cohorts, active multipliers, known targets, prime buffers, and delayed obstruction horizons | `lagged_certificate_frontier.py` | `tests/test_lagged_certificate_frontier.py` | implemented with finite-prefix regression coverage | Concrete runtime is data-structure-dependent |
+| Full unbounded MPL scheduler | Deterministic check-free scheduler for all primes | `lagged_certificate_frontier.py` for the derivation-level certificate-frontier form; compressed regime/motif form not implemented | `tests/test_lagged_certificate_frontier.py`, `docs/unbounded_scheduler_proof_obligations.md` | partial / proof obligation | Must not be claimed as compressed or O(1) |
+| Theorem 6.22 / 6.27 / 6.33, frontier completeness and conditional O(1) compression | Derivation-level construction is check-free; constant-step compression is conditional | `lagged_certificate_frontier.py`, `cost_model.py` framework | `tests/test_lagged_certificate_frontier.py`, `tests/test_cost_model_instrumentation.py` | implemented / proof obligation | The implementation validates finite-prefix regression contracts but does not prove the bounded lagged-closure compression theorem |
 | TC iff MPL bridge | Structural TC coverage and MPL successor agree globally | Finite verifier only | `tests/test_axis_bridge_consistency.py` | paper-only with finite validation | TC alone is not used as a prime generator |
 | U/E/O terminology | Unity seed, even unity-sets, first-order odd unity-sets, lpf odd composites, mixed even composites | `docs/claim_status_matrix.md`, `triadic_domains.py` | `tests/test_claim_status_docs.py` | documented | Terminology is aligned to V3 and does not alter arithmetic |
 
 ## Safe Citation Boundary
 
 The paper may cite this repository as support for a bounded executable prefix /
-regression harness, finite TC/Axis validation, bridge-verifier scaffolding, and
-claim-status auditing.  It should not cite the repository as a completed
-implementation of the full unbounded scheduler or as a computational proof of
-the O(1) theorem.
+regression harness, finite TC/Axis validation, bridge-verifier scaffolding,
+claim-status auditing, and an executable derivation-level lagged TC
+certificate-frontier scheduler.  It should not cite the repository as a
+computational proof of the O(1) theorem or the bounded lagged-closure
+compression theorem.
+The O(1) unit-cost successor claim remains a proof obligation outside the
+concrete frontier implementation.

@@ -43,7 +43,8 @@ def test_unbounded_scheduler_proof_obligations_are_explicit():
         "sentinel separation",
         "cost model",
         "validation plan",
-        "no experimental unbounded scheduler is added here",
+        "lagged certificate-frontier scheduler is implemented separately",
+        "bounded lagged-closure compression theorem remains open",
     ]
 
     for phrase in required_obligations:
@@ -55,6 +56,7 @@ def test_theorem_map_marks_full_scheduler_and_o1_as_obligations():
 
     assert "full unbounded mpl scheduler" in text
     assert "proof obligation" in text
-    assert "theorem 6.17" in text
+    assert "theorem 6.22" in text
+    assert "derivation-level lagged tc certificate-frontier scheduler" in text
     assert "o(1) unit-cost successor" in text
     assert "tc alone is not used as a prime generator" in text
